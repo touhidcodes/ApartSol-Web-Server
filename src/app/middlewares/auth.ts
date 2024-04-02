@@ -21,11 +21,11 @@ const auth = () => {
       );
 
       req.user = verifiedUser;
-      console.log(verifiedUser);
 
       //   if (roles.length && !roles.includes(verifiedUser.role)) {
       //     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
       //   }
+
       next();
     } catch (err) {
       next(err);

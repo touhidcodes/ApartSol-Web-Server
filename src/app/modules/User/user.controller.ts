@@ -5,7 +5,6 @@ import { userServices } from "./user.service";
 
 const createUser = catchAsync(async (req, res) => {
   const result = await userServices.createUser(req.body);
-  // console.log(req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

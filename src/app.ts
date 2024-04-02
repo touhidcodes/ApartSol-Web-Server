@@ -16,6 +16,10 @@ app.use(express.urlencoded({ extended: true }));
 // Application Routes
 app.use("/api", router);
 
+app.get("/", (req: Request, res: Response) => {
+  res.send("Server is running... !");
+});
+
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(httpStatus.NOT_FOUND).json({
     success: false,

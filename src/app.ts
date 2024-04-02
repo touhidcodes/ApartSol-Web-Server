@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import httpStatus from "http-status";
 import router from "./app/router/routes";
 import cookieParser from "cookie-parser";
+import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 
 dotenv.config();
 
@@ -21,6 +22,8 @@ app.use("/api", router);
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running... !");
 });
+
+app.use(globalErrorHandler);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.status(httpStatus.NOT_FOUND).json({

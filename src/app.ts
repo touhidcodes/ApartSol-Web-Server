@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import httpStatus from "http-status";
 import router from "./app/router/routes";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const app: Application = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 // Application Routes

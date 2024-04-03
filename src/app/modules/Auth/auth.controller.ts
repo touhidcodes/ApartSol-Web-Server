@@ -18,7 +18,10 @@ const loginUser = catchAsync(async (req, res) => {
     success: true,
     message: "Logged in successfully!",
     data: {
-      accessToken: result.accessToken,
+      id: result.userData.id,
+      name: result.userData.name,
+      email: result.userData.email,
+      token: result.accessToken,
     },
   });
 });

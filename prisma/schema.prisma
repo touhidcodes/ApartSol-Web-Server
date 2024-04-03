@@ -38,3 +38,20 @@ model UserProfile {
 
   @@map("user_profiles")
 }
+
+model Flat {
+  id                   String   @id @default(uuid())
+  squareFeet           Int
+  totalBedrooms        Int
+  totalRooms           Int
+  utilitiesDescription String
+  location             String
+  description          String
+  rent                 Int
+  availability         Boolean  @default(true)
+  advanceAmount        Int
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("flats")
+}

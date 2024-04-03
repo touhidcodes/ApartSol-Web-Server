@@ -40,6 +40,7 @@ const loginUser = async (payload: { email: string; password: string }) => {
   return {
     accessToken,
     refreshToken,
+    userData,
   };
 };
 

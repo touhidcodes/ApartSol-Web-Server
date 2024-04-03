@@ -8,6 +8,17 @@ const createFlat = async (flatData: Flat) => {
   return result;
 };
 
+const updateFlat = async (flatId: string, flatData: Partial<Flat>) => {
+  const result = await prisma.flat.update({
+    where: {
+      id: flatId,
+    },
+    data: flatData,
+  });
+  return result;
+};
+
 export const flatServices = {
   createFlat,
+  updateFlat,
 };

@@ -13,6 +13,18 @@ const createFlat = catchAsync(async (req, res) => {
   });
 });
 
+const updateFlat = catchAsync(async (req, res) => {
+  const { flatId } = req.params;
+  const result = await flatServices.updateFlat(flatId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Flat added successfully!",
+    data: result,
+  });
+});
+
 export const flatControllers = {
   createFlat,
+  updateFlat,
 };

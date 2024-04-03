@@ -52,6 +52,20 @@ const createFlatSchema = z.object({
   }),
 });
 
+const updateFlatSchema = z.object({
+  body: z.object({
+    squareFeet: z.number().int().min(1).max(99999).optional(),
+    totalBedrooms: z.number().int().min(1).max(4).optional(),
+    totalRooms: z.number().int().min(1).max(6).optional(),
+    utilitiesDescription: z.string().optional(),
+    location: z.string().optional(),
+    description: z.string().optional(),
+    rent: z.number().int().min(1).optional(),
+    advanceAmount: z.number().int().min(1).optional(),
+  }),
+});
+
 export const flatValidationSchemas = {
   createFlatSchema,
+  updateFlatSchema,
 };

@@ -29,6 +29,11 @@ const auth = () => {
       if (!user) {
         throw new APIError(httpStatus.UNAUTHORIZED, "Unauthorized Access!");
       }
+      // Check if the token is expired
+      const tokenExpirationDate = new Date((decodedUser.exp as number) * 1000);
+      if (tokenExpirationDate < new Date()) {
+        throw new APIError(httpStatus.UNAUTHORIZED, "Unauthorized Access!!");
+      }
 
       req.user = decodedUser;
 

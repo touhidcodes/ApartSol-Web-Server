@@ -5,6 +5,7 @@ import config from "../config/config";
 import { Secret } from "jsonwebtoken";
 import APIError from "../errors/APIError";
 import catchAsync from "../utils/catchAsync";
+import prisma from "../utils/prisma";
 
 const auth = () => {
   return catchAsync(async (req, res, next) => {
@@ -15,13 +16,26 @@ const auth = () => {
         throw new APIError(httpStatus.UNAUTHORIZED, "You are not authorized!");
       }
 
-      const verifiedUser = jwtHelpers.verifyToken(
+      const decodedUser = jwtHelpers.verifyToken(
         token,
         config.jwt.access_token_secret as Secret
       );
 
-      req.user = verifiedUser;
+      // Check if the user exists in the database
+      const user = await prisma.user.findUnique({
+        where: { id: decodedUser.userId, email: decodedUser.email },
+      });
 
+      if (!user) {
+        throw new APIError(
+          httpStatus.UNAUTHORIZED,
+          "User not found in database!"
+        );
+      }
+
+      req.user = decodedUser;
+
+      //  role based operations
       //   if (roles.length && !roles.includes(verifiedUser.role)) {
       //     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
       //   }

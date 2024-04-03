@@ -27,10 +27,7 @@ const auth = () => {
       });
 
       if (!user) {
-        throw new APIError(
-          httpStatus.UNAUTHORIZED,
-          "User not found in database!"
-        );
+        throw new APIError(httpStatus.UNAUTHORIZED, "Unauthorized Access!");
       }
 
       req.user = decodedUser;

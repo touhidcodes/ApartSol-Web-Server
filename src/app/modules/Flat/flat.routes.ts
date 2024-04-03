@@ -6,6 +6,8 @@ import { flatValidationSchemas } from "./flat.validation";
 
 const router = express.Router();
 
+router.get("/flats", flatControllers.getFlats);
+
 router.post(
   "/flats",
   auth(),

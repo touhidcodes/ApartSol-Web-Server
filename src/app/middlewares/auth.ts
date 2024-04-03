@@ -13,7 +13,7 @@ const auth = () => {
       const token = req.headers.authorization as string;
 
       if (!token) {
-        throw new APIError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+        throw new APIError(httpStatus.UNAUTHORIZED, "Unauthorized Access!");
       }
 
       const decodedUser = jwtHelpers.verifyToken(

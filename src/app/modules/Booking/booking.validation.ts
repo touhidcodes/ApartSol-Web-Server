@@ -8,6 +8,15 @@ const bookingRequestSchema = z.object({
   }),
 });
 
+const updateBookingSchema = z.object({
+  body: z.object({
+    status: z.string({
+      required_error: "status  is required",
+    }),
+  }),
+});
+
 export const bookingValidationSchemas = {
   bookingRequestSchema,
+  updateBookingSchema,
 };

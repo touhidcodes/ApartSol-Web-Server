@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const userDataSchema = z.object({
+const createUserSchema = z.object({
   name: z.string({ required_error: "Name is required" }),
   email: z.string({ required_error: "Email is required" }),
   password: z
@@ -12,5 +12,5 @@ const userDataSchema = z.object({
 });
 
 export const userValidationSchema = {
-  userDataSchema,
+  createUserSchema,
 };

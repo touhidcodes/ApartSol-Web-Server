@@ -21,6 +21,7 @@ model User {
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   UserProfile UserProfile?
+  Booking     Booking[]
 
   @@map("users")
 }
@@ -40,7 +41,7 @@ model UserProfile {
 }
 
 model Flat {
-  id                   String   @id @default(uuid())
+  id                   String    @id @default(uuid())
   squareFeet           Int
   totalBedrooms        Int
   totalRooms           Int
@@ -48,10 +49,30 @@ model Flat {
   location             String
   description          String
   rent                 Int
-  availability         Boolean  @default(true)
+  availability         Boolean   @default(true)
   advanceAmount        Int
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  Booking              Booking[]
 
   @@map("flats")
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  flatId    String
+  flat      Flat     @relation(fields: [flatId], references: [id])
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
+}
+
+enum Status {
+  PENDING
+  BOOKED
+  REJECTED
 }

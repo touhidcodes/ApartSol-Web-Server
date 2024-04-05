@@ -23,6 +23,8 @@ Before you begin, ensure you have met the following requirements:
 
 - Add, update, and view flats in the inventory.
 - Robust filtering system for effective flat selection.
+- Add, update, and view users and profiles.
+- Add, update, and view booking.
 
 ## Getting Started
 
@@ -66,28 +68,29 @@ Your application should now be running at http://localhost:3000.
 
 #### Live API URL: https://flat-sharing-app.vercel.app
 
-#### API Endpoints:
+## API Endpoints:
 
-```
-# Auth APIs:
--   Login: https://flat-sharing-app.vercel.app/api/login
--   Register: https://flat-sharing-app.vercel.app/api/register
+#### Auth APIs:
 
-# User APIs:
--   Get User Profile: https://flat-sharing-app.vercel.app/api/profile
--   Update Profile: https://flat-sharing-app.vercel.app/api/profile
+- Login: https://flat-sharing-app.vercel.app/api/login
+- Register: https://flat-sharing-app.vercel.app/api/register
 
+#### User APIs:
 
-# Flat APIs:
--   Get Flats: https://flat-sharing-app.vercel.app/api/flats
--   Create Flat: https://flat-sharing-app.vercel.app/api/flats
--   Update Flat: https://flat-sharing-app.vercel.app/api/flats/:flatId
+- Get User Profile: https://flat-sharing-app.vercel.app/api/profile
+- Update Profile: https://flat-sharing-app.vercel.app/api/profile
 
-# Booking APIs:
--   Get Booking Request: https://flat-sharing-app.vercel.app/api/booking-requests
--   Flat Booking Request: https://flat-sharing-app.vercel.app/api/booking-applications
--   Update Booking Request: https://flat-sharing-app.vercel.app/api/booking-requests/:bookingId
-```
+#### Flat APIs:
+
+- Get Flats: https://flat-sharing-app.vercel.app/api/flats
+- Create Flat: https://flat-sharing-app.vercel.app/api/flats
+- Update Flat: https://flat-sharing-app.vercel.app/api/flats/:flatId
+
+#### Booking APIs:
+
+- Get Booking Request: https://flat-sharing-app.vercel.app/api/booking-requests
+- Flat Booking Request: https://flat-sharing-app.vercel.app/api/booking-applications
+- Update Booking Request: https://flat-sharing-app.vercel.app/api/booking-requests/:bookingId
 
 ## Project Dependencies
 

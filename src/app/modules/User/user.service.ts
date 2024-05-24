@@ -2,9 +2,22 @@ import * as bcrypt from "bcrypt";
 import prisma from "../../utils/prisma";
 import { UserProfile } from "@prisma/client";
 import { TUserData } from "./user.interface";
+import APIError from "../../errors/APIError";
+import httpStatus from "http-status";
 
 const createUser = async (data: TUserData) => {
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      username: data.username,
+    },
+  });
+
+  if (existingUser) {
+    throw new APIError(httpStatus.CONFLICT, "Username is already taken");
+  }
+
   const hashedPassword: string = await bcrypt.hash(data.password, 12);
+
   const userData = {
     username: data.username,
     email: data.email,

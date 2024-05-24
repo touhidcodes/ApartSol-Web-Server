@@ -1,43 +1,26 @@
 import * as bcrypt from "bcrypt";
 import prisma from "../../utils/prisma";
 import { UserProfile } from "@prisma/client";
+import { TUserData } from "./user.interface";
 
 const createUser = async (data: TUserData) => {
   const hashedPassword: string = await bcrypt.hash(data.password, 12);
   const userData = {
-    name: data.name,
+    username: data.username,
     email: data.email,
+    role: data.role,
     password: hashedPassword,
   };
 
-  const userProfileData = {
-    bio: data.bio,
-    profession: data.profession,
-    address: data.address,
-  };
-
-  const result = await prisma.$transaction(async (transactionClient) => {
-    const createdUserData = await transactionClient.user.create({
-      data: userData,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
-    const userId = createdUserData.id;
-
-    await transactionClient.userProfile.create({
-      data: {
-        ...userProfileData,
-        userId: userId,
-      },
-    });
-
-    return createdUserData;
+  const result = await prisma.user.create({
+    data: userData,
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      createdAt: true,
+      updatedAt: true,
+    },
   });
 
   return result;

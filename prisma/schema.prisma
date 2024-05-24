@@ -10,13 +10,14 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("URL")
 }
 
 model User {
   id          String       @id @default(uuid())
-  name        String
+  username    String
   email       String       @unique
+  role        UserRole     @unique
   password    String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -29,6 +30,8 @@ model User {
 model UserProfile {
   id         String   @id @default(uuid())
   userId     String   @unique
+  name       String
+  image      String?
   bio        String
   profession String
   address    String
@@ -42,6 +45,7 @@ model UserProfile {
 
 model Flat {
   id                   String    @id @default(uuid())
+  image                String
   squareFeet           Int
   totalBedrooms        Int
   totalRooms           Int
@@ -75,4 +79,9 @@ enum Status {
   PENDING
   BOOKED
   REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  USER
 }

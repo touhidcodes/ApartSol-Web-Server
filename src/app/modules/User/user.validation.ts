@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const createUserSchema = z.object({
   body: z.object({
-    name: z.string({ required_error: "Name is required" }),
+    username: z.string({ required_error: "Username is required" }),
     email: z.string({ required_error: "Email is required" }),
     password: z
       .string({ required_error: "Password is required" })
@@ -15,6 +15,8 @@ const createUserSchema = z.object({
 
 const updateUserSchema = z.object({
   body: z.object({
+    image: z.string().optional(),
+    name: z.string().optional(),
     bio: z.string().optional(),
     profession: z.string().optional(),
     address: z.string().optional(),

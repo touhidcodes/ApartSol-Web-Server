@@ -15,9 +15,9 @@ datasource db {
 
 model User {
   id          String       @id @default(uuid())
-  username    String
+  username    String       @unique
   email       String       @unique
-  role        UserRole     @unique
+  role        UserRole
   password    String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
@@ -44,20 +44,20 @@ model UserProfile {
 }
 
 model Flat {
-  id                   String    @id @default(uuid())
-  image                String
-  squareFeet           Int
-  totalBedrooms        Int
-  totalRooms           Int
-  utilitiesDescription String
-  location             String
-  description          String
-  rent                 Int
-  availability         Boolean   @default(true)
-  advanceAmount        Int
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
-  Booking              Booking[]
+  id            String    @id @default(uuid())
+  image         String
+  squareFeet    Int
+  totalBedrooms Int
+  totalRooms    Int
+  amenities     String
+  location      String
+  description   String
+  rent          Int
+  availability  Boolean   @default(true)
+  advanceAmount Int
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  Booking       Booking[]
 
   @@map("flats")
 }

@@ -1,4 +1,4 @@
-# Level-2 Assignment-8 Flat Sharing Application
+# Level-2 Assignment-9 Flat Mate Finder Application
 
 This is a Node.js and Express.js application with TypeScript as the programming language, integrating PostgreSQL with Prisma ORM for user data and order management. Ensure data integrity through validation using Zod.
 

@@ -26,8 +26,8 @@ const createFlatSchema = z.object({
       .int()
       .min(1)
       .max(6),
-    utilitiesDescription: z.string({
-      required_error: "Utilities description is required",
+    amenities: z.string({
+      required_error: "Amenities description is required",
     }),
     location: z.string({
       required_error: "Location is required",

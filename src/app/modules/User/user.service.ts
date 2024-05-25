@@ -25,21 +25,42 @@ const createUser = async (data: TUserData) => {
     password: hashedPassword,
   };
 
-  const result = await prisma.user.create({
-    data: userData,
-    select: {
-      id: true,
-      username: true,
-      email: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+  const result = await prisma.$transaction(async (transactionClient) => {
+    const createdUserData = await transactionClient.user.create({
+      data: userData,
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    const userId = createdUserData.id;
+
+    await transactionClient.userProfile.create({
+      data: {
+        userId: userId,
+      },
+    });
+
+    return createdUserData;
   });
 
   return result;
 };
 
 const getUser = async (id: string) => {
+  const result = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+  });
+  return result;
+};
+
+const getUserProfile = async (id: string) => {
   const result = await prisma.userProfile.findUniqueOrThrow({
     where: {
       userId: id,
@@ -61,5 +82,6 @@ const updateUser = async (id: string, userData: Partial<UserProfile>) => {
 export const userServices = {
   createUser,
   getUser,
+  getUserProfile,
   updateUser,
 };

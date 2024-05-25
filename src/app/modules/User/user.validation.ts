@@ -7,9 +7,6 @@ const createUserSchema = z.object({
     password: z
       .string({ required_error: "Password is required" })
       .min(8, { message: "Password must be at least 8 characters long" }),
-    bio: z.string({ required_error: "Bio is required" }),
-    profession: z.string({ required_error: "Profession is required" }),
-    address: z.string({ required_error: "Address is required" }),
   }),
 });
 

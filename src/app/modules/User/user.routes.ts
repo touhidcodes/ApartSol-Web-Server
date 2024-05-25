@@ -12,7 +12,9 @@ router.post(
   userControllers.createUser
 );
 
-router.get("/profile", auth(), userControllers.getUser);
+router.get("/profile", auth(), userControllers.getUserProfile);
+
+router.get("/user", auth(), userControllers.getUser);
 
 router.put(
   "/profile",

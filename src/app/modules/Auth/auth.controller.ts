@@ -19,13 +19,27 @@ const loginUser = catchAsync(async (req, res) => {
     message: "Logged in successfully!",
     data: {
       id: result.userData.id,
-      name: result.userData.name,
+      username: result.userData.username,
       email: result.userData.email,
       token: result.accessToken,
     },
   });
 });
 
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  const result = await authServices.refreshToken(refreshToken);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Access token generated successfully!",
+    data: result,
+  });
+});
+
 export const authControllers = {
   loginUser,
+  refreshToken,
 };

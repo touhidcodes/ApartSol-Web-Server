@@ -2,7 +2,8 @@
 export const flatSearchableFields: string[] = [
   "location",
   "description",
-  "utilitiesDescription",
+  "amenities",
+  "title",
 ];
 
 // for all filtering

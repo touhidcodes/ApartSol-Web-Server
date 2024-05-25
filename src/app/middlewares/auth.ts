@@ -7,7 +7,7 @@ import APIError from "../errors/APIError";
 import catchAsync from "../utils/catchAsync";
 import prisma from "../utils/prisma";
 
-const auth = () => {
+const auth = (...roles: string[]) => {
   return catchAsync(async (req, res, next) => {
     try {
       const token = req.headers.authorization as string;
@@ -38,9 +38,9 @@ const auth = () => {
       req.user = decodedUser;
 
       //  role based operations
-      //   if (roles.length && !roles.includes(verifiedUser.role)) {
-      //     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
-      //   }
+      if (roles.length && !roles.includes(decodedUser.role)) {
+        throw new APIError(httpStatus.FORBIDDEN, "Forbidden!");
+      }
 
       next();
     } catch (err) {

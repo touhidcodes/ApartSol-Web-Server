@@ -8,6 +8,8 @@ const router = express.Router();
 
 router.get("/flats", flatControllers.getFlats);
 
+router.get("/flats/:flatId", flatControllers.getSingleFlat);
+
 router.post(
   "/flats",
   auth(),

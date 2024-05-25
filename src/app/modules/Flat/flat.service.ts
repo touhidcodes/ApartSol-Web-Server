@@ -66,7 +66,7 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
   const total = await prisma.flat.count({
     where: whereConditions,
   });
-
+  console.log(result);
   return {
     meta: {
       page,
@@ -75,6 +75,15 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     },
     data: result,
   };
+};
+
+const getSingleFlat = async (flatId: string) => {
+  const result = await prisma.flat.findUniqueOrThrow({
+    where: {
+      id: flatId,
+    },
+  });
+  return result;
 };
 
 const updateFlat = async (flatId: string, flatData: Partial<Flat>) => {
@@ -91,4 +100,5 @@ export const flatServices = {
   createFlat,
   getFlats,
   updateFlat,
+  getSingleFlat,
 };

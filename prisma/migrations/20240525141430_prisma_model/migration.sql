@@ -1,12 +1,20 @@
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('PENDING', 'BOOKED', 'REJECTED');
 
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'USER');
+
+-- CreateEnum
+CREATE TYPE "UserStatus" AS ENUM ('ACTIVE', 'BLOCKED');
+
 -- CreateTable
 CREATE TABLE "users" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "username" TEXT NOT NULL,
     "email" TEXT NOT NULL,
+    "role" "UserRole" NOT NULL,
     "password" TEXT NOT NULL,
+    "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -17,9 +25,11 @@ CREATE TABLE "users" (
 CREATE TABLE "user_profiles" (
     "id" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
-    "bio" TEXT NOT NULL,
-    "profession" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
+    "name" TEXT,
+    "image" TEXT,
+    "bio" TEXT,
+    "profession" TEXT,
+    "address" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -29,10 +39,12 @@ CREATE TABLE "user_profiles" (
 -- CreateTable
 CREATE TABLE "flats" (
     "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "image" TEXT NOT NULL,
     "squareFeet" INTEGER NOT NULL,
     "totalBedrooms" INTEGER NOT NULL,
     "totalRooms" INTEGER NOT NULL,
-    "utilitiesDescription" TEXT NOT NULL,
+    "amenities" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "rent" INTEGER NOT NULL,
@@ -55,6 +67,9 @@ CREATE TABLE "bookings" (
 
     CONSTRAINT "bookings_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "users_email_key" ON "users"("email");

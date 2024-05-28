@@ -1,5 +1,7 @@
 import { Booking } from "@prisma/client";
 import prisma from "../../utils/prisma";
+import APIError from "../../errors/APIError";
+import httpStatus from "http-status";
 
 const getBooking = async () => {
   const result = await prisma.booking.findMany();
@@ -11,6 +13,17 @@ const bookingRequest = async (userId: string, flatId: string) => {
     userId,
     flatId,
   };
+
+  const checkRequest = await prisma.booking.findFirst({
+    where: { userId: userId, flatId: flatId },
+  });
+
+  if (checkRequest) {
+    throw new APIError(
+      httpStatus.ALREADY_REPORTED,
+      "You have already booked this flat!"
+    );
+  }
 
   const result = await prisma.booking.create({
     data: bookingRequestData,

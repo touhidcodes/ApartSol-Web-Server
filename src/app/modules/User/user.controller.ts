@@ -28,7 +28,19 @@ const getUser = catchAsync(async (req, res) => {
 const getUserProfile = catchAsync(async (req, res) => {
   const { userId } = req.user;
 
-  const result = await userServices.getUser(userId);
+  const result = await userServices.getUserProfile(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile retrieved successfully!",
+    data: result,
+  });
+});
+
+const getUserWithProfile = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+
+  const result = await userServices.getUserWithProfile(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -54,4 +66,5 @@ export const userControllers = {
   getUser,
   updateUser,
   getUserProfile,
+  getUserWithProfile,
 };

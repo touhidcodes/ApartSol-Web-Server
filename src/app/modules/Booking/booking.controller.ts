@@ -16,6 +16,7 @@ const getBooking = catchAsync(async (req, res) => {
 const bookingRequest = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { flatId } = req.body;
+
   const result = await bookingServices.bookingRequest(userId, flatId);
   sendResponse(res, {
     statusCode: httpStatus.OK,

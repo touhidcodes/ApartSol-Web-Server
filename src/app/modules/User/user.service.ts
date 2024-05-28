@@ -56,8 +56,39 @@ const getUser = async (id: string) => {
     where: {
       id: id,
     },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      username: true,
+    },
   });
+
   return result;
+};
+
+const getUserWithProfile = async (id: string) => {
+  const user = await prisma.user.findUniqueOrThrow({
+    where: {
+      id: id,
+    },
+    select: {
+      id: true,
+      email: true,
+      role: true,
+      username: true,
+    },
+  });
+
+  const profile = await prisma.userProfile.findUniqueOrThrow({
+    where: {
+      userId: user.id,
+    },
+  });
+  return {
+    ...user,
+    ...profile,
+  };
 };
 
 const getUserProfile = async (id: string) => {
@@ -84,4 +115,5 @@ export const userServices = {
   getUser,
   getUserProfile,
   updateUser,
+  getUserWithProfile,
 };

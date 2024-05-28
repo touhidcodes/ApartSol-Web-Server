@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import router from "./app/router/routes";
 import cookieParser from "cookie-parser";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -22,7 +23,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Application Routes
 app.use("/api", router);

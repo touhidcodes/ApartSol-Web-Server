@@ -21,6 +21,12 @@ router.get(
   userControllers.getUser
 );
 
+router.get(
+  "/user-profile",
+  auth(UserRole.ADMIN, UserRole.USER),
+  userControllers.getUserWithProfile
+);
+
 router.put(
   "/profile",
   auth(),

@@ -4,9 +4,13 @@ import { TPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../utils/paginationHelpers";
 import { flatSearchableFields } from "./flat.constants";
 
-const createFlat = async (flatData: Flat) => {
+const createFlat = async (flatData: Flat, userId: string) => {
+  const data = {
+    ...flatData,
+    userId,
+  };
   const result = await prisma.flat.create({
-    data: flatData,
+    data: data,
   });
   return result;
 };
@@ -86,6 +90,15 @@ const getSingleFlat = async (flatId: string) => {
   return result;
 };
 
+const getMyFlats = async (userId: string) => {
+  const result = await prisma.flat.findMany({
+    where: {
+      userId: userId,
+    },
+  });
+  return result;
+};
+
 const updateFlat = async (flatId: string, flatData: Partial<Flat>) => {
   const result = await prisma.flat.update({
     where: {
@@ -101,4 +114,5 @@ export const flatServices = {
   getFlats,
   updateFlat,
   getSingleFlat,
+  getMyFlats,
 };

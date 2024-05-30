@@ -3,6 +3,7 @@ import auth from "../../middlewares/auth";
 import { flatControllers } from "./flat.controller";
 import validateRequest from "../../middlewares/validateRequest";
 import { flatValidationSchemas } from "./flat.validation";
+import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
@@ -10,9 +11,15 @@ router.get("/flats", flatControllers.getFlats);
 
 router.get("/flats/:flatId", flatControllers.getSingleFlat);
 
+router.get(
+  "/myFlats",
+  auth(UserRole.USER, UserRole.ADMIN),
+  flatControllers.getMyFlats
+);
+
 router.post(
   "/flats",
-  auth(),
+  auth(UserRole.USER, UserRole.ADMIN),
   validateRequest(flatValidationSchemas.createFlatSchema),
   flatControllers.createFlat
 );

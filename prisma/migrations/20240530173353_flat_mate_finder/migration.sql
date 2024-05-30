@@ -47,9 +47,10 @@ CREATE TABLE "flats" (
     "amenities" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "rent" INTEGER NOT NULL,
     "availability" BOOLEAN NOT NULL DEFAULT true,
+    "rent" INTEGER NOT NULL,
     "advanceAmount" INTEGER NOT NULL,
+    "userId" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

@@ -6,7 +6,9 @@ import queryPickers from "../../utils/queryPickers";
 import { flatFilterableFields } from "./flat.constants";
 
 const createFlat = catchAsync(async (req, res) => {
-  const result = await flatServices.createFlat(req.body);
+  const { userId } = req.user;
+
+  const result = await flatServices.createFlat(req.body, userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -47,6 +49,17 @@ const getSingleFlat = catchAsync(async (req, res) => {
   });
 });
 
+const getMyFlats = catchAsync(async (req, res) => {
+  const { userId } = req.user;
+  const result = await flatServices.getMyFlats(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Flat added successfully!",
+    data: result,
+  });
+});
+
 const updateFlat = catchAsync(async (req, res) => {
   const { flatId } = req.params;
   const result = await flatServices.updateFlat(flatId, req.body);
@@ -63,4 +76,5 @@ export const flatControllers = {
   getFlats,
   updateFlat,
   getSingleFlat,
+  getMyFlats,
 };

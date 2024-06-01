@@ -8,6 +8,22 @@ const getBooking = async () => {
   return result;
 };
 
+const getMyBookings = async (userId: string) => {
+  const result = await prisma.booking.findMany({
+    where: { userId: userId },
+    include: {
+      flat: {
+        select: {
+          title: true,
+          location: true,
+          rent: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
 const bookingRequest = async (userId: string, flatId: string) => {
   const bookingRequestData = {
     userId,
@@ -48,4 +64,5 @@ export const bookingServices = {
   bookingRequest,
   getBooking,
   updateBooking,
+  getMyBookings,
 };

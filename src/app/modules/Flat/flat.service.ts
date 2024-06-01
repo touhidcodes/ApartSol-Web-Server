@@ -85,6 +85,7 @@ const getSingleFlat = async (flatId: string) => {
   const result = await prisma.flat.findUniqueOrThrow({
     where: {
       id: flatId,
+      availability: true,
     },
   });
   return result;
@@ -94,6 +95,7 @@ const getMyFlats = async (userId: string) => {
   const result = await prisma.flat.findMany({
     where: {
       userId: userId,
+      availability: true,
     },
   });
   return result;
@@ -109,10 +111,23 @@ const updateFlat = async (flatId: string, flatData: Partial<Flat>) => {
   return result;
 };
 
+const deleteFlat = async (flatId: string) => {
+  const result = await prisma.flat.update({
+    where: {
+      id: flatId,
+    },
+    data: {
+      availability: false,
+    },
+  });
+  return result;
+};
+
 export const flatServices = {
   createFlat,
   getFlats,
   updateFlat,
   getSingleFlat,
   getMyFlats,
+  deleteFlat,
 };

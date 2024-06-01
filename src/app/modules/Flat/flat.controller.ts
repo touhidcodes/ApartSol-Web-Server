@@ -62,11 +62,24 @@ const getMyFlats = catchAsync(async (req, res) => {
 
 const updateFlat = catchAsync(async (req, res) => {
   const { flatId } = req.params;
+
   const result = await flatServices.updateFlat(flatId, req.body);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Flat added successfully!",
+    message: "Flat updated successfully!",
+    data: result,
+  });
+});
+
+const deleteFlat = catchAsync(async (req, res) => {
+  const { flatId } = req.params;
+
+  const result = await flatServices.deleteFlat(flatId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Flat deleted successfully!",
     data: result,
   });
 });
@@ -77,4 +90,5 @@ export const flatControllers = {
   updateFlat,
   getSingleFlat,
   getMyFlats,
+  deleteFlat,
 };

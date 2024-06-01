@@ -12,7 +12,7 @@ router.get("/flats", flatControllers.getFlats);
 router.get("/flats/:flatId", flatControllers.getSingleFlat);
 
 router.get(
-  "/myFlats",
+  "/my-flats",
   auth(UserRole.USER, UserRole.ADMIN),
   flatControllers.getMyFlats
 );
@@ -26,9 +26,15 @@ router.post(
 
 router.put(
   "/flats/:flatId",
-  auth(),
+  auth(UserRole.ADMIN, UserRole.USER),
   validateRequest(flatValidationSchemas.updateFlatSchema),
   flatControllers.updateFlat
+);
+
+router.delete(
+  "/flats/:flatId",
+  auth(UserRole.ADMIN, UserRole.USER),
+  flatControllers.deleteFlat
 );
 
 export const flatRoutes = router;

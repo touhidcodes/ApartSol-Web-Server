@@ -29,7 +29,7 @@ router.get(
 
 router.put(
   "/profile",
-  auth(),
+  auth(UserRole.ADMIN, UserRole.USER),
   validateRequest(userValidationSchema.updateUserSchema),
   userControllers.updateUser
 );

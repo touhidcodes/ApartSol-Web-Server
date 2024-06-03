@@ -4,7 +4,17 @@ import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 
 const getBooking = async () => {
-  const result = await prisma.booking.findMany();
+  const result = await prisma.booking.findMany({
+    include: {
+      flat: {
+        select: {
+          title: true,
+          location: true,
+          rent: true,
+        },
+      },
+    },
+  });
   return result;
 };
 

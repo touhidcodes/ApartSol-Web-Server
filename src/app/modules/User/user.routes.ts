@@ -15,6 +15,8 @@ router.post(
 
 router.get("/profile", auth(), userControllers.getUserProfile);
 
+router.get("/all-users", auth(UserRole.ADMIN), userControllers.getAllUser);
+
 router.get(
   "/user",
   auth(UserRole.ADMIN, UserRole.USER),
@@ -32,6 +34,13 @@ router.put(
   auth(UserRole.ADMIN, UserRole.USER),
   validateRequest(userValidationSchema.updateUserSchema),
   userControllers.updateUser
+);
+
+router.put(
+  "/status/:userId",
+  auth(UserRole.ADMIN),
+  validateRequest(userValidationSchema.updateUserSchema),
+  userControllers.updateUserStatus
 );
 
 export const userRoutes = router;

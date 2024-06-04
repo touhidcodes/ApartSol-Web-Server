@@ -1,9 +1,10 @@
 import * as bcrypt from "bcrypt";
 import prisma from "../../utils/prisma";
-import { UserProfile } from "@prisma/client";
+import { Prisma, User, UserProfile } from "@prisma/client";
 import { TUserData } from "./user.interface";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
+import config from "../../config/config";
 
 const createUser = async (data: TUserData) => {
   const existingUser = await prisma.user.findUnique({
@@ -61,6 +62,18 @@ const getUser = async (id: string) => {
       email: true,
       role: true,
       username: true,
+    },
+  });
+
+  return result;
+};
+
+const getAllUser = async (currentUserEmail: string) => {
+  const result = await prisma.user.findMany({
+    where: {
+      email: {
+        notIn: [config.superAdmin.super_admin_email, currentUserEmail],
+      },
     },
   });
 
@@ -169,10 +182,24 @@ const updateUser = async (
   };
 };
 
+//  update user status
+const updateUserStatus = async (
+  userId: string,
+  updatedData: Partial<Prisma.UserUpdateInput>
+) => {
+  const result = await prisma.user.update({
+    where: { id: userId },
+    data: updatedData,
+  });
+  return result;
+};
+
 export const userServices = {
   createUser,
   getUser,
   getUserProfile,
   updateUser,
   getUserWithProfile,
+  getAllUser,
+  updateUserStatus,
 };

@@ -17,6 +17,8 @@ const updateUserSchema = z.object({
     bio: z.string().optional(),
     profession: z.string().optional(),
     address: z.string().optional(),
+    status: z.string().optional(),
+    role: z.string().optional(),
   }),
 });
 

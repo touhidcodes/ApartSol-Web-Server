@@ -25,6 +25,18 @@ const getUser = catchAsync(async (req, res) => {
   });
 });
 
+const getAllUser = catchAsync(async (req, res) => {
+  const { email } = req.user;
+
+  const result = await userServices.getAllUser(email);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All users profile retrieved successfully!",
+    data: result,
+  });
+});
+
 const getUserProfile = catchAsync(async (req, res) => {
   const { userId } = req.user;
 
@@ -61,10 +73,24 @@ const updateUser = catchAsync(async (req, res) => {
   });
 });
 
+const updateUserStatus = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+
+  const result = await userServices.updateUserStatus(userId, req.body);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User status updated successfully!",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createUser,
   getUser,
   updateUser,
   getUserProfile,
   getUserWithProfile,
+  getAllUser,
+  updateUserStatus,
 };

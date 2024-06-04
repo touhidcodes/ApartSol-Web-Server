@@ -6,6 +6,9 @@ import config from "../../config/config";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 import { UserStatus } from "@prisma/client";
+import { IChangePassword } from "./auth.interface";
+import { comparePasswords } from "../../utils/comparePassword";
+import { hashedPassword } from "../../utils/hashedPassword";
 
 const loginUser = async (payload: { identifier: string; password: string }) => {
   let userData = await prisma.user.findUnique({
@@ -96,7 +99,42 @@ const refreshToken = async (token: string) => {
   };
 };
 
+const changePassword = async (userId: string, payload: IChangePassword) => {
+  const { oldPassword, newPassword } = payload;
+
+  const isUserExist = await prisma.user.findUnique({
+    where: {
+      id: userId,
+      status: UserStatus.ACTIVE,
+    },
+  });
+
+  if (!isUserExist) {
+    throw new APIError(httpStatus.NOT_FOUND, "User does not exist");
+  }
+
+  // checking old password
+  if (
+    isUserExist.password &&
+    !(await comparePasswords(oldPassword, isUserExist.password))
+  ) {
+    throw new APIError(httpStatus.UNAUTHORIZED, "Old Password is incorrect");
+  }
+
+  const hashPassword = await hashedPassword(newPassword);
+
+  await prisma.user.update({
+    where: {
+      id: isUserExist.id,
+    },
+    data: {
+      password: hashPassword,
+    },
+  });
+};
+
 export const authServices = {
   loginUser,
   refreshToken,
+  changePassword,
 };

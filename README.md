@@ -33,7 +33,7 @@ Follow these steps to get your project up and running:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Porgramming-Hero-web-course/l2-b2-fullstack-track-assignment-8-touhidcodes
+   git clone https://github.com/touhidcodes/Level-2-Assignment-9-Flat-Mate-Finder-App-Server
    ```
 
 2. **Navigate to the project folder:**
@@ -52,8 +52,18 @@ npm install
    Create a .env file in the project root and configure any necessary environment variables. For example:
 
 ```
-PORT=3000
-MONGODB_URI=postgres://[USER]:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres
+NODE_ENV="development"
+PORT=5000
+DATABASE_URL="your database url"
+ACCESS_TOKEN_SECRET="your access token secret code"
+ACCESS_TOKEN_EXPIRES_IN="30d"
+REFRESH_TOKEN_SECRET="your refresh token secret code"
+REFRESH_TOKEN_EXPIRES_IN="30d"
+RESET_PASS_TOKEN="your reset pass token secret code"
+RESET_PASS_TOKEN_EXPIRES_IN="5m"
+SUPABASE_PASS="your supabase secret code"
+SUPER_ADMIN_EMAIL= "super admin email"
+SUPER_ADMIN_USERNAME="super admin username"
 ```
 
 3. **Run the application:**
@@ -62,7 +72,7 @@ MONGODB_URI=postgres://[USER]:[YOUR-PASSWORD]@aws-0-ap-southeast-1.pooler.supaba
 npm run dev
 ```
 
-Your application should now be running at http://localhost:3000.
+Your application should now be running at http://localhost:5000.
 
 ## Live URLs
 
@@ -98,8 +108,9 @@ Your application should now be running at http://localhost:3000.
 
 ```
  "dependencies": {
-    "@prisma/client": "^5.11.0",
+"@prisma/client": "^5.11.0",
     "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
@@ -115,7 +126,7 @@ Your application should now be running at http://localhost:3000.
 
 ```
  "devDependencies": {
-   "@types/bcrypt": "^5.0.2",
+  "@types/bcrypt": "^5.0.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",

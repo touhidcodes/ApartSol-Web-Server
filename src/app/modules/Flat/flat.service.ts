@@ -17,7 +17,14 @@ const createFlat = async (flatData: Flat, userId: string) => {
 
 const getFlats = async (params: any, options: TPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
-  const { searchTerm, availability, ...filterData } = params;
+  const {
+    searchTerm,
+    availability,
+    minPrice,
+    maxPrice,
+    totalBedrooms,
+    ...filterData
+  } = params;
 
   const andConditions: Prisma.FlatWhereInput[] = [];
 
@@ -37,6 +44,30 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     const availabilityFilter = params.availability === "true" ? true : false;
     andConditions.push({
       availability: availabilityFilter,
+    });
+  }
+
+  if (minPrice) {
+    andConditions.push({
+      rent: {
+        gte: parseFloat(minPrice),
+      },
+    });
+  }
+
+  if (maxPrice) {
+    andConditions.push({
+      rent: {
+        lte: parseFloat(maxPrice),
+      },
+    });
+  }
+
+  if (totalBedrooms) {
+    andConditions.push({
+      totalBedrooms: {
+        equals: parseInt(totalBedrooms),
+      },
     });
   }
 

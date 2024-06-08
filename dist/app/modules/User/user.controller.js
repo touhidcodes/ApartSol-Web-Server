@@ -36,6 +36,36 @@ const getUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0
         data: result,
     });
 }));
+const getAllUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.user;
+    const result = yield user_service_1.userServices.getAllUser(email);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "All users profile retrieved successfully!",
+        data: result,
+    });
+}));
+const getUserProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield user_service_1.userServices.getUserProfile(userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User profile retrieved successfully!",
+        data: result,
+    });
+}));
+const getUserWithProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield user_service_1.userServices.getUserWithProfile(userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User profile retrieved successfully!",
+        data: result,
+    });
+}));
 const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.user;
     const result = yield user_service_1.userServices.updateUser(userId, req.body);
@@ -46,8 +76,22 @@ const updateUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const updateUserStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.params;
+    const result = yield user_service_1.userServices.updateUserStatus(userId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "User status updated successfully!",
+        data: result,
+    });
+}));
 exports.userControllers = {
     createUser,
     getUser,
     updateUser,
+    getUserProfile,
+    getUserWithProfile,
+    getAllUser,
+    updateUserStatus,
 };

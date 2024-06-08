@@ -1,6 +1,7 @@
 import { UserRole } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import prisma from "./prisma";
+import config from "../config/config";
 
 export const seedSuperAdmin = async () => {
   try {
@@ -15,18 +16,43 @@ export const seedSuperAdmin = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash("superadmin", 12);
+    const hashedPassword = await bcrypt.hash(
+      config.superAdmin.super_admin_username as string,
+      12
+    );
 
-    const superAdminData = await prisma.user.create({
-      data: {
-        email: "super@admin.com",
-        password: hashedPassword,
-        role: UserRole.ADMIN,
-        username: "superadmin",
-      },
-    });
+    const superAdminData = {
+      email: config.superAdmin.super_admin_email as string,
+      password: hashedPassword,
+      role: UserRole.ADMIN,
+      username: config.superAdmin.super_admin_username as string,
+    };
 
-    console.log("Super Admin Created Successfully!", superAdminData);
+    if (!isExistSuperAdmin) {
+      const superAdmin = await prisma.$transaction(
+        async (transactionClient) => {
+          const createdUserData = await transactionClient.user.create({
+            data: superAdminData,
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              createdAt: true,
+              updatedAt: true,
+            },
+          });
+
+          const userId = createdUserData.id;
+
+          await transactionClient.userProfile.create({
+            data: {
+              userId: userId,
+            },
+          });
+        }
+      );
+      return superAdmin;
+    }
   } catch (err) {
     console.error(err);
   } finally {

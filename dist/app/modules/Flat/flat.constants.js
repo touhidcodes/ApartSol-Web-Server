@@ -5,7 +5,8 @@ exports.flatFilterableFields = exports.flatSearchableFields = void 0;
 exports.flatSearchableFields = [
     "location",
     "description",
-    "utilitiesDescription",
+    "amenities",
+    "title",
 ];
 // for all filtering
 exports.flatFilterableFields = ["availability", "searchTerm"];

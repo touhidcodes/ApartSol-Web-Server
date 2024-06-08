@@ -14,8 +14,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bookingServices = void 0;
 const prisma_1 = __importDefault(require("../../utils/prisma"));
+const APIError_1 = __importDefault(require("../../errors/APIError"));
+const http_status_1 = __importDefault(require("http-status"));
 const getBooking = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield prisma_1.default.booking.findMany();
+    const result = yield prisma_1.default.booking.findMany({
+        include: {
+            flat: {
+                select: {
+                    title: true,
+                    location: true,
+                    rent: true,
+                },
+            },
+        },
+    });
+    return result;
+});
+const getMyBookings = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.booking.findMany({
+        where: { userId: userId },
+        include: {
+            flat: {
+                select: {
+                    title: true,
+                    location: true,
+                    rent: true,
+                },
+            },
+        },
+    });
     return result;
 });
 const bookingRequest = (userId, flatId) => __awaiter(void 0, void 0, void 0, function* () {
@@ -23,6 +50,12 @@ const bookingRequest = (userId, flatId) => __awaiter(void 0, void 0, void 0, fun
         userId,
         flatId,
     };
+    const checkRequest = yield prisma_1.default.booking.findFirst({
+        where: { userId: userId, flatId: flatId },
+    });
+    if (checkRequest) {
+        throw new APIError_1.default(http_status_1.default.ALREADY_REPORTED, "You have already booked this flat!");
+    }
     const result = yield prisma_1.default.booking.create({
         data: bookingRequestData,
     });
@@ -41,4 +74,5 @@ exports.bookingServices = {
     bookingRequest,
     getBooking,
     updateBooking,
+    getMyBookings,
 };

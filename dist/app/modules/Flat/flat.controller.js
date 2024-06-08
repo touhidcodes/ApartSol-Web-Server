@@ -20,7 +20,8 @@ const flat_service_1 = require("./flat.service");
 const queryPickers_1 = __importDefault(require("../../utils/queryPickers"));
 const flat_constants_1 = require("./flat.constants");
 const createFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield flat_service_1.flatServices.createFlat(req.body);
+    const { userId } = req.user;
+    const result = yield flat_service_1.flatServices.createFlat(req.body, userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -46,9 +47,9 @@ const getFlats = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
         data: result.data,
     });
 }));
-const updateFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { flatId } = req.params;
-    const result = yield flat_service_1.flatServices.updateFlat(flatId, req.body);
+    const result = yield flat_service_1.flatServices.getSingleFlat(flatId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -56,8 +57,41 @@ const updateFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
         data: result,
     });
 }));
+const getMyFlats = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield flat_service_1.flatServices.getMyFlats(userId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Flat added successfully!",
+        data: result,
+    });
+}));
+const updateFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { flatId } = req.params;
+    const result = yield flat_service_1.flatServices.updateFlat(flatId, req.body);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Flat updated successfully!",
+        data: result,
+    });
+}));
+const deleteFlat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { flatId } = req.params;
+    const result = yield flat_service_1.flatServices.deleteFlat(flatId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Flat deleted successfully!",
+        data: result,
+    });
+}));
 exports.flatControllers = {
     createFlat,
     getFlats,
     updateFlat,
+    getSingleFlat,
+    getMyFlats,
+    deleteFlat,
 };

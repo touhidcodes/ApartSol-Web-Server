@@ -18,7 +18,7 @@ const config_1 = __importDefault(require("../config/config"));
 const APIError_1 = __importDefault(require("../errors/APIError"));
 const catchAsync_1 = __importDefault(require("../utils/catchAsync"));
 const prisma_1 = __importDefault(require("../utils/prisma"));
-const auth = () => {
+const auth = (...roles) => {
     return (0, catchAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const token = req.headers.authorization;
@@ -40,9 +40,9 @@ const auth = () => {
             }
             req.user = decodedUser;
             //  role based operations
-            //   if (roles.length && !roles.includes(verifiedUser.role)) {
-            //     throw new ApiError(httpStatus.FORBIDDEN, "Forbidden!");
-            //   }
+            if (roles.length && !roles.includes(decodedUser.role)) {
+                throw new APIError_1.default(http_status_1.default.FORBIDDEN, "Forbidden!");
+            }
             next();
         }
         catch (err) {

@@ -27,9 +27,10 @@ exports.flatServices = void 0;
 const prisma_1 = __importDefault(require("../../utils/prisma"));
 const paginationHelpers_1 = require("../../utils/paginationHelpers");
 const flat_constants_1 = require("./flat.constants");
-const createFlat = (flatData) => __awaiter(void 0, void 0, void 0, function* () {
+const createFlat = (flatData, userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = Object.assign(Object.assign({}, flatData), { userId });
     const result = yield prisma_1.default.flat.create({
-        data: flatData,
+        data: data,
     });
     return result;
 });
@@ -79,6 +80,7 @@ const getFlats = (params, options) => __awaiter(void 0, void 0, void 0, function
     const total = yield prisma_1.default.flat.count({
         where: whereConditions,
     });
+    console.log(result);
     return {
         meta: {
             page,
@@ -87,6 +89,24 @@ const getFlats = (params, options) => __awaiter(void 0, void 0, void 0, function
         },
         data: result,
     };
+});
+const getSingleFlat = (flatId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.flat.findUniqueOrThrow({
+        where: {
+            id: flatId,
+            availability: true,
+        },
+    });
+    return result;
+});
+const getMyFlats = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.flat.findMany({
+        where: {
+            userId: userId,
+            availability: true,
+        },
+    });
+    return result;
 });
 const updateFlat = (flatId, flatData) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield prisma_1.default.flat.update({
@@ -97,8 +117,22 @@ const updateFlat = (flatId, flatData) => __awaiter(void 0, void 0, void 0, funct
     });
     return result;
 });
+const deleteFlat = (flatId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield prisma_1.default.flat.update({
+        where: {
+            id: flatId,
+        },
+        data: {
+            availability: false,
+        },
+    });
+    return result;
+});
 exports.flatServices = {
     createFlat,
     getFlats,
     updateFlat,
+    getSingleFlat,
+    getMyFlats,
+    deleteFlat,
 };

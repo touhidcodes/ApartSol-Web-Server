@@ -19,13 +19,14 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
   const {
     searchTerm,
+    location,
     availability,
     minPrice,
     maxPrice,
     totalBedrooms,
     ...filterData
   } = params;
-
+  console.log(params);
   const andConditions: Prisma.FlatWhereInput[] = [];
 
   if (params.searchTerm) {
@@ -44,6 +45,15 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     const availabilityFilter = params.availability === "true" ? true : false;
     andConditions.push({
       availability: availabilityFilter,
+    });
+  }
+
+  if (location) {
+    andConditions.push({
+      location: {
+        contains: location,
+        mode: "insensitive",
+      },
     });
   }
 

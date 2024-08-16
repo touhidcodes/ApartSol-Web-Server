@@ -7,7 +7,7 @@ export const seedSuperAdmin = async () => {
   try {
     const isExistSuperAdmin = await prisma.user.findFirst({
       where: {
-        role: UserRole.ADMIN,
+        role: UserRole.SUPERADMIN,
       },
     });
 
@@ -24,7 +24,7 @@ export const seedSuperAdmin = async () => {
     const superAdminData = {
       email: config.superAdmin.super_admin_email as string,
       password: hashedPassword,
-      role: UserRole.ADMIN,
+      role: UserRole.SUPERADMIN,
       username: config.superAdmin.super_admin_username as string,
     };
 

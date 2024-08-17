@@ -83,6 +83,12 @@ const totalBookings = async () => {
   return result;
 };
 
+const totalPost = async () => {
+  const result = await prisma.flat.count();
+
+  return result;
+};
+
 const totalBookingsByUser = async (userId: string) => {
   const result = await prisma.booking.count({
     where: {
@@ -156,6 +162,7 @@ export const dashboardServices = {
   monthlyTotalUsers,
   getUserByRole,
   totalUser,
+  totalPost,
   totalBookings,
   totalBookingsByUser,
   bookingsByUser,

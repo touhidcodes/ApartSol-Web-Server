@@ -70,21 +70,42 @@ const loginUser = async (payload: { identifier: string; password: string }) => {
 
 const refreshToken = async (token: string) => {
   let decodedData;
+
   try {
+    // Verify the token
     decodedData = jwtHelpers.verifyToken(
       token,
       config.jwt.refresh_token_secret as Secret
     );
   } catch (err) {
-    throw new Error("You are not authorized!");
+    // Type narrowing to check if 'err' is an instance of Error
+    if (err instanceof Error) {
+      // Handle specific JWT errors based on their name
+      if (err.name === "TokenExpiredError") {
+        throw new Error("Refresh token expired, please log in again.");
+      } else if (err.name === "JsonWebTokenError") {
+        throw new Error("Invalid token, please log in again.");
+      } else {
+        throw new Error("You are not authorized!");
+      }
+    } else {
+      // In case 'err' is not of type 'Error'
+      throw new Error("An unknown error occurred!");
+    }
   }
 
-  const userData = await prisma.user.findUniqueOrThrow({
+  // Check if the user exists
+  const userData = await prisma.user.findUnique({
     where: {
-      email: decodedData.email,
+      email: decodedData?.email,
     },
   });
 
+  if (!userData) {
+    throw new Error("User not found!");
+  }
+
+  // Generate a new access token
   const accessToken = jwtHelpers.generateToken(
     {
       email: userData.email,

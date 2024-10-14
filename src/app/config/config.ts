@@ -33,6 +33,10 @@ export default {
     user_email: process.env.USER_EMAIL,
     user_password: process.env.USER_PASSWORD,
   },
+  stripe: {
+    secret_key: process.env.STRIPE_SECRET_KEY,
+    webhook_secret: process.env.WEBHOOK_SECRET_KEY,
+  },
 
   //Here add your other environment variables
 };

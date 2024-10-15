@@ -45,10 +45,11 @@ const bookingRequest = async (userId: string, flatId: string) => {
   });
 
   if (checkRequest) {
-    throw new APIError(
-      httpStatus.ALREADY_REPORTED,
-      "You have already booked this flat!"
-    );
+    return {
+      success: false,
+      message: "You have already booked this flat!",
+      data: checkRequest,
+    };
   }
 
   const result = await prisma.booking.create({

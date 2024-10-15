@@ -31,6 +31,8 @@ router.get(
   dashboardControllers.totalBookings
 );
 
+router.get("/post-all", auth(UserRole.ADMIN), dashboardControllers.totalPost);
+
 router.get(
   "/total-bookings-user",
   auth(UserRole.USER),

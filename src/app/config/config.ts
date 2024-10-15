@@ -25,6 +25,10 @@ export default {
     super_admin_username: process.env.SUPER_ADMIN_USERNAME,
     super_admin_email: process.env.SUPER_ADMIN_EMAIL,
   },
+  stripe: {
+    secret_key: process.env.STRIPE_SECRET_KEY,
+    webhook_secret: process.env.WEBHOOK_SECRET_KEY,
+  },
   test: {
     admin_email: process.env.ADMIN_EMAIL,
     admin_username: process.env.ADMIN_USERNAME,
@@ -32,6 +36,9 @@ export default {
     user_username: process.env.USER_USERNAME,
     user_email: process.env.USER_EMAIL,
     user_password: process.env.USER_PASSWORD,
+  },
+  client: {
+    client_url: process.env.CLIENT_URL,
   },
 
   //Here add your other environment variables

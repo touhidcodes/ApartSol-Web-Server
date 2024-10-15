@@ -50,6 +50,17 @@ const totalUser = catchAsync(async (req, res) => {
   });
 });
 
+const totalPost = catchAsync(async (req, res) => {
+  const result = await dashboardServices.totalPost();
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Dashboard statistics retrieved successfully!",
+    data: result,
+  });
+});
+
 const totalBookings = catchAsync(async (req, res) => {
   const result = await dashboardServices.totalBookings();
 
@@ -114,6 +125,7 @@ export const dashboardControllers = {
   monthlyTotalUsers,
   getUserByRole,
   totalUser,
+  totalPost,
   totalBookings,
   totalBookingsByUser,
   bookingsByUser,

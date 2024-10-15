@@ -69,58 +69,65 @@ const processWebhook = async (payload: Buffer, sig: string) => {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      payload,
-      sig!,
-      config.stripe.webhook_secret as string
-    );
-  } catch (err) {
-    console.log("err", err);
-    throw new APIError(httpStatus.BAD_REQUEST, `Webhook error`);
-  }
+    if (config.stripe.webhook_secret as string) {
+      event = stripe.webhooks.constructEvent(
+        payload,
+        sig!,
+        config.stripe.webhook_secret as string
+      );
+    } else {
+      throw new APIError(
+        httpStatus.BAD_REQUEST,
+        `Webhook endpoint secret not found`
+      );
+    }
 
-  // Handle event types
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
+    // Handle event types
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as Stripe.Checkout.Session;
 
-      try {
-        // Find the booking ID from the session metadata
-        const bookingId = session.metadata?.bookingId;
-        console.log(bookingId);
+        try {
+          // Find the booking ID from the session metadata
+          const bookingId = session.metadata?.bookingId;
+          console.log(bookingId);
 
-        if (!bookingId) {
+          if (!bookingId) {
+            throw new APIError(
+              httpStatus.NOT_FOUND,
+              "Booking ID not found in session metadata"
+            );
+          }
+
+          await prisma.$transaction(async (tx) => {
+            // Update booking status to "BOOKED"
+            await tx.booking.update({
+              where: { id: bookingId },
+              data: { status: "BOOKED" },
+            });
+
+            // Update payment status to "closed"
+            await tx.payment.updateMany({
+              where: { bookingId: bookingId },
+              data: { status: "closed" },
+            });
+          });
+        } catch (error) {
           throw new APIError(
-            httpStatus.NOT_FOUND,
-            "Booking ID not found in session metadata"
+            httpStatus.NOT_MODIFIED,
+            "Error updating booking record"
           );
         }
 
-        await prisma.$transaction(async (tx) => {
-          // Update booking status to "BOOKED"
-          await tx.booking.update({
-            where: { id: bookingId },
-            data: { status: "BOOKED" },
-          });
-
-          // Update payment status to "closed"
-          await tx.payment.updateMany({
-            where: { bookingId: bookingId },
-            data: { status: "closed" },
-          });
-        });
-      } catch (error) {
-        throw new APIError(
-          httpStatus.NOT_MODIFIED,
-          "Error updating booking record"
-        );
+        break;
       }
 
-      break;
+      default:
+      // console.log(`Unhandled event type: ${event.type}`);
     }
-
-    default:
-    // console.log(`Unhandled event type: ${event.type}`);
+  } catch (err) {
+    console.log("err", err);
+    throw new APIError(httpStatus.BAD_REQUEST, `Webhook error`);
   }
 };
 

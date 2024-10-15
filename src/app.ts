@@ -21,12 +21,22 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-app.use(express.json());
+// app.use(express.json());
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
+
+// Use JSON parser for all non-webhook routes
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/webhook") {
+    next();
+  } else {
+    bodyParser.json()(req, res, next);
+  }
+});
 
 // Application Routes
 app.use("/api", router);
+// app.use("/api/webhook", express.raw({ type: "application/json" }));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running... !");

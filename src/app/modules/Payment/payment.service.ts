@@ -10,7 +10,6 @@ const stripe = new Stripe(config.stripe.secret_key!, {
 });
 
 const createPayment = async (bookingId: string) => {
-  console.log(bookingId);
   // Fetch booking details from the database using Prisma
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
@@ -66,48 +65,62 @@ const createPayment = async (bookingId: string) => {
   return { paymentRecord, url: session.url };
 };
 
-const processWebhook = async (information: any, sig: any) => {
-  const event: Stripe.Event = stripe.webhooks.constructEvent(
-    information,
-    sig!,
-    config.stripe.webhook_secret as string
-  );
+const processWebhook = async (payload: Buffer, sig: string) => {
+  let event: Stripe.Event;
 
+  try {
+    event = stripe.webhooks.constructEvent(
+      payload,
+      sig!,
+      config.stripe.webhook_secret as string
+    );
+  } catch (err) {
+    console.log("err", err);
+    throw new APIError(httpStatus.BAD_REQUEST, `Webhook error`);
+  }
+
+  // Handle event types
   switch (event.type) {
-    case "checkout.session.completed":
+    case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session;
-      console.log("Payment successful:", session.id);
 
       try {
         // Find the booking ID from the session metadata
         const bookingId = session.metadata?.bookingId;
+        console.log(bookingId);
 
         if (!bookingId) {
-          new APIError(
+          throw new APIError(
             httpStatus.NOT_FOUND,
             "Booking ID not found in session metadata"
           );
         }
 
-        // Update the booking status to COMPLETED or any relevant status
-        const updatedBooking = await prisma.booking.update({
-          where: {
-            id: bookingId,
-          },
-          data: {
-            status: "BOOKED",
-          },
+        await prisma.$transaction(async (tx) => {
+          // Update booking status to "BOOKED"
+          await tx.booking.update({
+            where: { id: bookingId },
+            data: { status: "BOOKED" },
+          });
+
+          // Update payment status to "closed"
+          await tx.payment.updateMany({
+            where: { bookingId: bookingId },
+            data: { status: "closed" },
+          });
         });
-
-        console.log("Booking record updated:", updatedBooking);
       } catch (error) {
-        new APIError(httpStatus.NOT_MODIFIED, "Error updating booking record");
+        throw new APIError(
+          httpStatus.NOT_MODIFIED,
+          "Error updating booking record"
+        );
       }
-      break;
 
-    // Handle other event types as needed
+      break;
+    }
+
     default:
-      console.log(`Unhandled event type: ${event.type}`);
+    // console.log(`Unhandled event type: ${event.type}`);
   }
 };
 

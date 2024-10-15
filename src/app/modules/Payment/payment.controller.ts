@@ -17,13 +17,21 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const processWebhook = catchAsync(async (req: Request, res: Response) => {
-  const sig = req.headers["stripe-signature"];
-  const result = await paymentServices.processWebhook(req.body, sig);
+  const sig = req.headers["stripe-signature"] as string;
+  console.log("webhook signature", sig);
+  console.log("body", req.body);
+
+  if (!sig) {
+    return res.status(httpStatus.BAD_REQUEST).send("Missing Stripe signature.");
+  }
+
+  // Call the service to process the webhook
+  const result = await paymentServices.processWebhook(req.body, sig!);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Payment validate successfully!",
+    message: "Payment validated successfully!",
     data: result,
   });
 });

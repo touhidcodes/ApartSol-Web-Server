@@ -21,7 +21,6 @@ const corsOptions = {
 
 // Middleware
 app.use(cors(corsOptions));
-// app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
@@ -36,7 +35,6 @@ app.use((req, res, next) => {
 
 // Application Routes
 app.use("/api", router);
-// app.use("/api/webhook", express.raw({ type: "application/json" }));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running... !");

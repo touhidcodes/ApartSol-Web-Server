@@ -42,8 +42,8 @@ const createPayment = async (bookingId: string) => {
       },
     ],
     mode: "payment",
-    success_url: `http://localhost:5000/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `http://localhost:5000/cancel`,
+    success_url: `${config.client.client_url}/checkout/success`,
+    cancel_url: `${config.client.client_url}/checkout/cancel`,
     metadata: {
       bookingId: booking.id,
     },

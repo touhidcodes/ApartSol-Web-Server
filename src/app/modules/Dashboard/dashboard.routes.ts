@@ -7,53 +7,61 @@ const router = express.Router();
 
 router.get(
   "/user-reg",
-  auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.getUserRegistrationTrends
 );
 
 router.get(
   "/user-month",
-  auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.monthlyTotalUsers
 );
 
 router.get(
   "/user-role",
-  auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.getUserByRole
 );
 
-router.get("/user-all", auth(UserRole.ADMIN), dashboardControllers.totalUser);
+router.get(
+  "/user-all",
+  auth(UserRole.ADMIN, UserRole.USER),
+  dashboardControllers.totalUser
+);
 
 router.get(
   "/bookings-all",
-  auth(UserRole.ADMIN),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.totalBookings
 );
 
-router.get("/post-all", auth(UserRole.ADMIN), dashboardControllers.totalPost);
+router.get(
+  "/post-all",
+  auth(UserRole.ADMIN, UserRole.USER),
+  dashboardControllers.totalPost
+);
 
 router.get(
   "/total-bookings-user",
-  auth(UserRole.USER),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.totalBookingsByUser
 );
 
 router.get(
   "/bookings-user",
-  auth(UserRole.USER),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.bookingsByUser
 );
 
 router.get(
   "/total-flats-user",
-  auth(UserRole.USER),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.totalFlatPostByUser
 );
 
 router.get(
   "/flats-user",
-  auth(UserRole.USER),
+  auth(UserRole.ADMIN, UserRole.USER),
   dashboardControllers.flatPostByUser
 );
 

@@ -16,6 +16,16 @@ const createReview = catchAsync(async (req, res) => {
   });
 });
 
+const getAllReviews = catchAsync(async (req, res) => {
+  const result = await reviewServices.getAllReviews();
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Reviews retrieved successfully!",
+    data: result,
+  });
+});
+
 const getFlatReviews = catchAsync(async (req, res) => {
   const { flatId } = req.params;
 
@@ -66,6 +76,7 @@ const deleteReview = catchAsync(async (req, res) => {
 
 export const reviewControllers = {
   createReview,
+  getAllReviews,
   getFlatReviews,
   getSingleReview,
   updateReview,

@@ -3,6 +3,21 @@ import prisma from "../../utils/prisma";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 
+// Get all reviews
+const getAllReviews = async () => {
+  const result = await prisma.review.findMany({
+    include: {
+      user: {
+        select: {
+          username: true,
+          email: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
 // Get all reviews for a specific flat
 const getFlatReviews = async (flatId: string) => {
   const result = await prisma.review.findMany({
@@ -91,6 +106,7 @@ const deleteReview = async (reviewId: string) => {
 };
 
 export const reviewServices = {
+  getAllReviews,
   getFlatReviews,
   getSingleReview,
   createReview,

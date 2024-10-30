@@ -11,9 +11,15 @@ import { comparePasswords } from "../../utils/comparePassword";
 import { hashedPassword } from "../../utils/hashedPassword";
 
 const loginUser = async (payload: { identifier: string; password: string }) => {
+  const { identifier } = payload;
+
+  if (!identifier) {
+    throw new APIError(httpStatus.NOT_FOUND, "Email or Username is required");
+  }
+
   let userData = await prisma.user.findUnique({
     where: {
-      email: payload.identifier,
+      email: identifier,
       status: UserStatus.ACTIVE,
     },
   });
@@ -21,7 +27,7 @@ const loginUser = async (payload: { identifier: string; password: string }) => {
   if (!userData) {
     userData = await prisma.user.findUnique({
       where: {
-        username: payload.identifier,
+        username: identifier,
         status: UserStatus.ACTIVE,
       },
     });

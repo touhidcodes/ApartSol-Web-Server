@@ -7,6 +7,9 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
+// Get all reviews
+router.get("/reviews", reviewControllers.getAllReviews);
+
 // Get all reviews for a specific flat
 router.get("/reviews/:flatId", reviewControllers.getFlatReviews);
 

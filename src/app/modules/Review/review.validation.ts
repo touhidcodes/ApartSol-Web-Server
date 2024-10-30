@@ -5,9 +5,8 @@ const createReviewSchema = z.object({
     rating: z.string({
       required_error: "Rating is required",
     }),
-    comment: z.string(),
-    flatId: z.string({
-      required_error: "Flat Id is required",
+    comment: z.string({
+      required_error: "Comment is required",
     }),
   }),
 });

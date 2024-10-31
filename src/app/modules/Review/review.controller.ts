@@ -7,6 +7,20 @@ const createReview = catchAsync(async (req, res) => {
   const { userId } = req.user;
   const { flatId } = req.params;
 
+  const existingReview = await reviewServices.getFlatReviewByUser(
+    userId,
+    flatId
+  );
+
+  if (existingReview) {
+    return sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "You have already submitted a review for this flat.",
+      data: null,
+    });
+  }
+
   const result = await reviewServices.createReview(req.body, userId, flatId);
   sendResponse(res, {
     statusCode: httpStatus.OK,

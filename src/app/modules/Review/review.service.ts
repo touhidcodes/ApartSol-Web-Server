@@ -78,6 +78,15 @@ const createReview = async (
   return result;
 };
 
+const getFlatReviewByUser = async (userId: string, flatId: string) => {
+  return await prisma.review.findFirst({
+    where: {
+      userId: userId,
+      flatId: flatId,
+    },
+  });
+};
+
 // Update a review by ID
 const updateReview = async (reviewId: string, reviewData: Partial<Review>) => {
   const result = await prisma.review.update({
@@ -112,4 +121,5 @@ export const reviewServices = {
   createReview,
   updateReview,
   deleteReview,
+  getFlatReviewByUser,
 };

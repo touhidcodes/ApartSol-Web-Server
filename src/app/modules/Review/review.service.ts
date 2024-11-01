@@ -6,11 +6,20 @@ import httpStatus from "http-status";
 // Get all reviews
 const getAllReviews = async () => {
   const result = await prisma.review.findMany({
+    where: {
+      isDeleted: false,
+    },
     include: {
       user: {
         select: {
           username: true,
           email: true,
+        },
+      },
+      flat: {
+        select: {
+          title: true,
+          location: true,
         },
       },
     },
@@ -21,7 +30,7 @@ const getAllReviews = async () => {
 // Get all reviews for a specific flat
 const getFlatReviews = async (flatId: string) => {
   const result = await prisma.review.findMany({
-    where: { flatId },
+    where: { flatId, isDeleted: false },
     include: {
       user: {
         select: {
@@ -87,6 +96,29 @@ const getFlatReviewByUser = async (userId: string, flatId: string) => {
   });
 };
 
+const getUsersReview = async (userId: string) => {
+  return await prisma.review.findMany({
+    where: {
+      userId: userId,
+      isDeleted: false,
+    },
+    include: {
+      user: {
+        select: {
+          username: true,
+          email: true,
+        },
+      },
+      flat: {
+        select: {
+          title: true,
+          location: true,
+        },
+      },
+    },
+  });
+};
+
 // Update a review by ID
 const updateReview = async (reviewId: string, reviewData: Partial<Review>) => {
   const result = await prisma.review.update({
@@ -103,8 +135,11 @@ const updateReview = async (reviewId: string, reviewData: Partial<Review>) => {
 
 // Delete a review by ID
 const deleteReview = async (reviewId: string) => {
-  const result = await prisma.review.delete({
+  const result = await prisma.review.update({
     where: { id: reviewId },
+    data: {
+      isDeleted: true,
+    },
   });
 
   if (!result) {
@@ -117,6 +152,7 @@ const deleteReview = async (reviewId: string) => {
 export const reviewServices = {
   getAllReviews,
   getFlatReviews,
+  getUsersReview,
   getSingleReview,
   createReview,
   updateReview,

@@ -83,6 +83,7 @@ model Review {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   rating    String
   comment   String
+  isDeleted Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    String   @db.ObjectId

@@ -45,23 +45,30 @@ model UserProfile {
 }
 
 model Flat {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  image         String
-  squareFeet    Int
-  totalBedrooms Int
-  totalRooms    Int
-  amenities     String
-  location      String
-  description   String
-  availability  Boolean   @default(true)
-  rent          Int
-  advanceAmount Int
-  userId        String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  booking       Booking[]
-  review        Review[]
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  title          String
+  images         String[]
+  squareFeet     Int
+  totalRooms     Int
+  totalBedrooms  Int
+  totalBathrooms Int
+  propertyType   PropertyType
+  purpose        Purpose
+  parking        Boolean
+  elevator       Boolean
+  wifi           Boolean
+  location       String
+  description    String
+  amenities      String[]
+  availability   Boolean      @default(true)
+  rent           Int
+  advanceAmount  Int
+  userId         String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  booking Booking[]
+  review  Review[]
 
   @@map("flats")
 }
@@ -138,4 +145,14 @@ enum UserRole {
 enum UserStatus {
   ACTIVE
   BLOCKED
+}
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+}
+
+enum Purpose {
+  RENT
+  SALE
 }

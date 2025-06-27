@@ -7,9 +7,9 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
-router.get("/flats", flatControllers.getFlats);
+router.get("/", flatControllers.getFlats);
 
-router.get("/flats/:flatId", flatControllers.getSingleFlat);
+router.get("/:flatId", flatControllers.getSingleFlat);
 
 router.get(
   "/my-flats",
@@ -18,21 +18,21 @@ router.get(
 );
 
 router.post(
-  "/flats",
-  auth(UserRole.USER, UserRole.ADMIN),
+  "/",
+  auth(UserRole.AGENT, UserRole.ADMIN),
   validateRequest(flatValidationSchemas.createFlatSchema),
   flatControllers.createFlat
 );
 
 router.put(
-  "/flats/:flatId",
+  "/:flatId",
   auth(UserRole.ADMIN, UserRole.USER),
   validateRequest(flatValidationSchemas.updateFlatSchema),
   flatControllers.updateFlat
 );
 
 router.delete(
-  "/flats/:flatId",
+  "/:flatId",
   auth(UserRole.ADMIN, UserRole.USER),
   flatControllers.deleteFlat
 );

@@ -24,25 +24,25 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     minPrice,
     maxPrice,
     totalBedrooms,
+    amenities,
     ...filterData
   } = params;
 
   const andConditions: Prisma.FlatWhereInput[] = [];
 
-  if (params.searchTerm) {
+  if (searchTerm) {
     andConditions.push({
       OR: flatSearchableFields.map((field) => ({
         [field]: {
-          contains: params.searchTerm,
+          contains: searchTerm,
           mode: "insensitive",
         },
       })),
     });
   }
 
-  // Add condition for availability because it have boolean value
-  if (availability) {
-    const availabilityFilter = params.availability === "true" ? true : false;
+  if (availability !== undefined) {
+    const availabilityFilter = availability === "true";
     andConditions.push({
       availability: availabilityFilter,
     });
@@ -81,13 +81,25 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     });
   }
 
-  if (Object.keys(filterData).length > 0) {
+  // Handle amenities filter
+  if (amenities && Array.isArray(amenities) && amenities.length > 0) {
     andConditions.push({
-      AND: Object.keys(filterData).map((key) => ({
-        [key]: {
-          equals: (filterData as any)[key],
-        },
-      })),
+      amenities: {
+        hasEvery: amenities,
+      },
+    });
+  }
+
+  // Handle other filter data
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.keys(filterData).map((key) => ({
+      [key]: {
+        equals: (filterData as any)[key],
+      },
+    }));
+
+    andConditions.push({
+      AND: filterConditions,
     });
   }
 

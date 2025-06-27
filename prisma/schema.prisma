@@ -139,6 +139,7 @@ enum Status {
 enum UserRole {
   SUPERADMIN
   ADMIN
+  AGENT
   USER
 }
 

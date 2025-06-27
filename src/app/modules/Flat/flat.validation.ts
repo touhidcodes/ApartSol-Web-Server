@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+const PropertyTypeEnum = z.enum(["RESIDENTIAL", "COMMERCIAL"]);
+const PurposeEnum = z.enum(["RENT", "SALE"]);
+
 const createFlatSchema = z.object({
   body: z.object({
     squareFeet: z
@@ -10,6 +13,7 @@ const createFlatSchema = z.object({
       .int()
       .min(1)
       .max(99999),
+
     totalBedrooms: z
       .number({
         required_error:
@@ -18,6 +22,7 @@ const createFlatSchema = z.object({
       .int()
       .min(1)
       .max(4),
+
     totalRooms: z
       .number({
         required_error:
@@ -26,18 +31,47 @@ const createFlatSchema = z.object({
       .int()
       .min(1)
       .max(6),
-    amenities: z.string({
-      required_error: "Amenities description is required",
+
+    totalBathrooms: z
+      .number({
+        required_error:
+          "Total bathrooms is required and must be a positive integer less than or equal to 4",
+      })
+      .int()
+      .min(1)
+      .max(4),
+
+    propertyType: PropertyTypeEnum,
+    purpose: PurposeEnum,
+
+    parking: z.boolean({
+      required_error: "Parking information is required",
     }),
+
+    elevator: z.boolean({
+      required_error: "Elevator information is required",
+    }),
+
+    wifi: z.boolean({
+      required_error: "WiFi information is required",
+    }),
+
+    amenities: z
+      .array(z.string({ required_error: "Amenity must be a string" }))
+      .nonempty({ message: "At least one amenity is required" }),
+
     title: z.string({
       required_error: "Flat title is required",
     }),
+
     location: z.string({
       required_error: "Location is required",
     }),
+
     description: z.string({
       required_error: "Description is required",
     }),
+
     rent: z
       .number({
         required_error:
@@ -45,6 +79,7 @@ const createFlatSchema = z.object({
       })
       .int()
       .min(1),
+
     advanceAmount: z
       .number({
         required_error:
@@ -60,7 +95,14 @@ const updateFlatSchema = z.object({
     squareFeet: z.number().int().min(1).max(99999).optional(),
     totalBedrooms: z.number().int().min(1).max(4).optional(),
     totalRooms: z.number().int().min(1).max(6).optional(),
-    utilitiesDescription: z.string().optional(),
+    totalBathrooms: z.number().int().min(1).max(4).optional(),
+    propertyType: PropertyTypeEnum.optional(),
+    purpose: PurposeEnum.optional(),
+    parking: z.boolean().optional(),
+    elevator: z.boolean().optional(),
+    wifi: z.boolean().optional(),
+    amenities: z.array(z.string()).optional(),
+    title: z.string().optional(),
     location: z.string().optional(),
     description: z.string().optional(),
     rent: z.number().int().min(1).optional(),

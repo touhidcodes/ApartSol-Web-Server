@@ -14,12 +14,18 @@ const getAllReviews = async () => {
         select: {
           username: true,
           email: true,
+          role: true,
+          UserProfile: {
+            select: {
+              image: true,
+              name: true,
+            },
+          },
         },
       },
       flat: {
         select: {
           title: true,
-          location: true,
         },
       },
     },
@@ -112,7 +118,6 @@ const getUsersReview = async (userId: string) => {
       flat: {
         select: {
           title: true,
-          location: true,
         },
       },
     },

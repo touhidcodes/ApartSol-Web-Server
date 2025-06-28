@@ -44,33 +44,22 @@ const createFlatSchema = z.object({
     propertyType: PropertyTypeEnum,
     purpose: PurposeEnum,
 
-    parking: z.boolean({
-      required_error: "Parking information is required",
-    }),
-
-    elevator: z.boolean({
-      required_error: "Elevator information is required",
-    }),
-
-    wifi: z.boolean({
-      required_error: "WiFi information is required",
-    }),
+    parking: z.boolean({ required_error: "Parking information is required" }),
+    elevator: z.boolean({ required_error: "Elevator information is required" }),
+    wifi: z.boolean({ required_error: "WiFi information is required" }),
 
     amenities: z
       .array(z.string({ required_error: "Amenity must be a string" }))
       .nonempty({ message: "At least one amenity is required" }),
 
-    title: z.string({
-      required_error: "Flat title is required",
-    }),
+    title: z.string({ required_error: "Flat title is required" }),
+    description: z.string({ required_error: "Description is required" }),
 
-    location: z.string({
-      required_error: "Location is required",
-    }),
-
-    description: z.string({
-      required_error: "Description is required",
-    }),
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
 
     rent: z
       .number({
@@ -103,8 +92,12 @@ const updateFlatSchema = z.object({
     wifi: z.boolean().optional(),
     amenities: z.array(z.string()).optional(),
     title: z.string().optional(),
-    location: z.string().optional(),
     description: z.string().optional(),
+    street: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    zipCode: z.string().optional(),
+    country: z.string().optional(),
     rent: z.number().int().min(1).optional(),
     advanceAmount: z.number().int().min(1).optional(),
   }),

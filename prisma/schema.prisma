@@ -24,20 +24,33 @@ model User {
   payment     Payment[]
   review      Review[]
   Blog        Blog[]
+  Flat        Flat[]
 
   @@map("users")
 }
 
 model UserProfile {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @unique @db.ObjectId
-  name       String?
-  image      String?
-  bio        String?
-  profession String?
-  address    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  name           String?
+  image          String?
+  bio            String?
+  profession     String?
+  company        String?
+  phone          String?
+  secondaryPhone String?
+  emailVerified  Boolean  @default(false)
+  phoneVerified  Boolean  @default(false)
+  street         String?
+  city           String?
+  state          String?
+  zipCode        String?
+  country        String?
+  website        String?
+  socialLinks    String[]
+  verified       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
@@ -57,15 +70,21 @@ model Flat {
   parking        Boolean
   elevator       Boolean
   wifi           Boolean
-  location       String
+  street         String?
+  city           String?
+  state          String?
+  zipCode        String?
+  country        String?
   description    String
   amenities      String[]
   availability   Boolean      @default(true)
   rent           Int
   advanceAmount  Int
-  userId         String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  userId         String       @unique @db.ObjectId
+  user           User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   booking Booking[]
   review  Review[]
@@ -89,6 +108,8 @@ model Booking {
 
 model Review {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
   rating    String
   comment   String
   isDeleted Boolean  @default(false)
@@ -98,6 +119,8 @@ model Review {
   user      User     @relation(fields: [userId], references: [id])
   flatId    String   @db.ObjectId
   flat      Flat?    @relation(fields: [flatId], references: [id])
+
+  @@map("reviews")
 }
 
 model Payment {

@@ -8,24 +8,20 @@ import { UserRole } from "@prisma/client";
 const router = express.Router();
 
 // Get all reviews
-router.get("/reviews", reviewControllers.getAllReviews);
+router.get("/", reviewControllers.getAllReviews);
 
 // Get all reviews
-router.get(
-  "/reviews/user",
-  auth(UserRole.USER),
-  reviewControllers.getUsersReview
-);
+router.get("/user", auth(UserRole.USER), reviewControllers.getUsersReview);
 
 // Get all reviews for a specific flat
-router.get("/reviews/:flatId", reviewControllers.getFlatReviews);
+router.get("/:flatId", reviewControllers.getFlatReviews);
 
 // Get a single review by ID
-router.get("/reviews/:reviewId", reviewControllers.getSingleReview);
+router.get("/:reviewId", reviewControllers.getSingleReview);
 
 // Create a review for a flat
 router.post(
-  "/reviews/:flatId",
+  "/:flatId",
   auth(UserRole.USER),
   validateRequest(reviewValidationSchemas.createReviewSchema),
   reviewControllers.createReview
@@ -33,7 +29,7 @@ router.post(
 
 // Update a review by ID
 router.put(
-  "/reviews/:reviewId",
+  "/:reviewId",
   auth(UserRole.USER, UserRole.ADMIN),
   validateRequest(reviewValidationSchemas.updateReviewSchema),
   reviewControllers.updateReview
@@ -41,7 +37,7 @@ router.put(
 
 // Delete a review by ID
 router.delete(
-  "/reviews/:reviewId",
+  "/:reviewId",
   auth(UserRole.USER, UserRole.ADMIN),
   reviewControllers.deleteReview
 );

@@ -50,10 +50,13 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
 
   if (location) {
     andConditions.push({
-      location: {
-        contains: location,
-        mode: "insensitive",
-      },
+      OR: [
+        { street: { contains: location, mode: "insensitive" } },
+        { city: { contains: location, mode: "insensitive" } },
+        { state: { contains: location, mode: "insensitive" } },
+        { zipCode: { contains: location, mode: "insensitive" } },
+        { country: { contains: location, mode: "insensitive" } },
+      ],
     });
   }
 
@@ -140,7 +143,24 @@ const getSingleFlat = async (flatId: string) => {
       id: flatId,
       availability: true,
     },
+    include: {
+      user: {
+        select: {
+          UserProfile: true,
+        },
+      },
+      review: {
+        include: {
+          user: {
+            include: {
+              UserProfile: true,
+            },
+          },
+        },
+      },
+    },
   });
+
   return result;
 };
 

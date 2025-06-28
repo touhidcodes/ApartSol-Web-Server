@@ -18,7 +18,6 @@ const createFlat = catchAsync(async (req, res) => {
 });
 
 const getFlats = catchAsync(async (req, res) => {
-  // console.log(req.query)
   const filters = queryPickers(req.query, flatFilterableFields);
   const options = queryPickers(req.query, [
     "limit",

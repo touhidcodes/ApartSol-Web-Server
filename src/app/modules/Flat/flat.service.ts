@@ -25,6 +25,7 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     maxPrice,
     totalBedrooms,
     amenities,
+    purpose,
     ...filterData
   } = params;
 
@@ -80,6 +81,14 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     andConditions.push({
       totalBedrooms: {
         equals: parseInt(totalBedrooms),
+      },
+    });
+  }
+
+  if (purpose) {
+    andConditions.push({
+      purpose: {
+        equals: purpose,
       },
     });
   }

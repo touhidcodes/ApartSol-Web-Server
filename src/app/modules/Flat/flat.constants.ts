@@ -7,4 +7,15 @@ export const flatSearchableFields: string[] = [
 ];
 
 // for all filtering
-export const flatFilterableFields: string[] = ["availability", "searchTerm"];
+export const flatFilterableFields: string[] = [
+  "availability",
+  "searchTerm",
+  "location",
+  "description",
+  "amenities",
+  "title",
+  "minPrice",
+  "maxPrice",
+  "totalBedrooms",
+  "purpose",
+];

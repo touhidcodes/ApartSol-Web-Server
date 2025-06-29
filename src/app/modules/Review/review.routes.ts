@@ -14,14 +14,14 @@ router.get("/", reviewControllers.getAllReviews);
 router.get("/user", auth(UserRole.USER), reviewControllers.getUsersReview);
 
 // Get all reviews for a specific flat
-router.get("/:flatId", reviewControllers.getFlatReviews);
+router.get("/:propertyId", reviewControllers.getPropertyReviews);
 
 // Get a single review by ID
 router.get("/:reviewId", reviewControllers.getSingleReview);
 
 // Create a review for a flat
 router.post(
-  "/:flatId",
+  "/:propertyId",
   auth(UserRole.USER),
   validateRequest(reviewValidationSchemas.createReviewSchema),
   reviewControllers.createReview

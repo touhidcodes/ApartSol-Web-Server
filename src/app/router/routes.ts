@@ -1,7 +1,7 @@
 import express from "express";
 import { userRoutes } from "../modules/User/user.routes";
 import { authRoutes } from "../modules/Auth/auth.routes";
-import { flatRoutes } from "../modules/Flat/flat.routes";
+import { propertyRoutes } from "../modules/Property/property.routes";
 import { bookingRoutes } from "../modules/Booking/booking.routes";
 import { dashboardRoutes } from "../modules/Dashboard/dashboard.routes";
 import { paymentRoutes } from "../modules/Payment/payment.routes";
@@ -20,8 +20,8 @@ const moduleRoutes = [
     route: authRoutes,
   },
   {
-    path: "/flats",
-    route: flatRoutes,
+    path: "/properties",
+    route: propertyRoutes,
   },
   {
     path: "/",

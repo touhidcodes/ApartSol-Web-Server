@@ -3,7 +3,7 @@ import { z } from "zod";
 const PropertyTypeEnum = z.enum(["RESIDENTIAL", "COMMERCIAL"]);
 const PurposeEnum = z.enum(["RENT", "SALE"]);
 
-const createFlatSchema = z.object({
+const createPropertySchema = z.object({
   body: z.object({
     squareFeet: z
       .number({
@@ -52,7 +52,7 @@ const createFlatSchema = z.object({
       .array(z.string({ required_error: "Amenity must be a string" }))
       .nonempty({ message: "At least one amenity is required" }),
 
-    title: z.string({ required_error: "Flat title is required" }),
+    title: z.string({ required_error: "Property title is required" }),
     description: z.string({ required_error: "Description is required" }),
 
     street: z.string().optional(),
@@ -79,7 +79,7 @@ const createFlatSchema = z.object({
   }),
 });
 
-const updateFlatSchema = z.object({
+const updatePropertySchema = z.object({
   body: z.object({
     squareFeet: z.number().int().min(1).max(99999).optional(),
     totalBedrooms: z.number().int().min(1).max(4).optional(),
@@ -103,7 +103,7 @@ const updateFlatSchema = z.object({
   }),
 });
 
-export const flatValidationSchemas = {
-  createFlatSchema,
-  updateFlatSchema,
+export const propertyValidationSchemas = {
+  createPropertySchema,
+  updatePropertySchema,
 };

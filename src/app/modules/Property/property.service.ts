@@ -1,22 +1,23 @@
-import { Flat, Prisma } from "@prisma/client";
+import { Property, Prisma } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { TPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../utils/paginationHelpers";
-import { flatSearchableFields } from "./flat.constants";
+import { propertySearchableFields } from "./property.constants";
 
-const createFlat = async (flatData: Flat, userId: string) => {
+const createProperty = async (propertyData: Property, userId: string) => {
   const data = {
-    ...flatData,
+    ...propertyData,
     userId,
   };
-  const result = await prisma.flat.create({
+  const result = await prisma.property.create({
     data: data,
   });
   return result;
 };
 
-const getFlats = async (params: any, options: TPaginationOptions) => {
+const getAllProperties = async (params: any, options: TPaginationOptions) => {
   const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
   const {
     searchTerm,
     location,
@@ -29,11 +30,11 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     ...filterData
   } = params;
 
-  const andConditions: Prisma.FlatWhereInput[] = [];
+  const andConditions: Prisma.PropertyWhereInput[] = [];
 
   if (searchTerm) {
     andConditions.push({
-      OR: flatSearchableFields.map((field) => ({
+      OR: propertySearchableFields.map((field) => ({
         [field]: {
           contains: searchTerm,
           mode: "insensitive",
@@ -115,10 +116,10 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
     });
   }
 
-  const whereConditions: Prisma.FlatWhereInput =
+  const whereConditions: Prisma.PropertyWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
 
-  const result = await prisma.flat.findMany({
+  const result = await prisma.property.findMany({
     where: whereConditions,
     skip,
     take: limit,
@@ -132,7 +133,7 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
           },
   });
 
-  const total = await prisma.flat.count({
+  const total = await prisma.property.count({
     where: whereConditions,
   });
 
@@ -146,10 +147,10 @@ const getFlats = async (params: any, options: TPaginationOptions) => {
   };
 };
 
-const getSingleFlat = async (flatId: string) => {
-  const result = await prisma.flat.findUniqueOrThrow({
+const getSingleProperty = async (propertyId: string) => {
+  const result = await prisma.property.findUniqueOrThrow({
     where: {
-      id: flatId,
+      id: propertyId,
       availability: true,
     },
     include: {
@@ -173,8 +174,8 @@ const getSingleFlat = async (flatId: string) => {
   return result;
 };
 
-const getMyFlats = async (userId: string) => {
-  const result = await prisma.flat.findMany({
+const getMyProperties = async (userId: string) => {
+  const result = await prisma.property.findMany({
     where: {
       userId: userId,
       availability: true,
@@ -183,20 +184,23 @@ const getMyFlats = async (userId: string) => {
   return result;
 };
 
-const updateFlat = async (flatId: string, flatData: Partial<Flat>) => {
-  const result = await prisma.flat.update({
+const updateProperty = async (
+  propertyId: string,
+  propertyData: Partial<Property>
+) => {
+  const result = await prisma.property.update({
     where: {
-      id: flatId,
+      id: propertyId,
     },
-    data: flatData,
+    data: propertyData,
   });
   return result;
 };
 
-const deleteFlat = async (flatId: string) => {
-  const result = await prisma.flat.update({
+const deleteProperty = async (propertyId: string) => {
+  const result = await prisma.property.update({
     where: {
-      id: flatId,
+      id: propertyId,
     },
     data: {
       availability: false,
@@ -205,11 +209,11 @@ const deleteFlat = async (flatId: string) => {
   return result;
 };
 
-export const flatServices = {
-  createFlat,
-  getFlats,
-  updateFlat,
-  getSingleFlat,
-  getMyFlats,
-  deleteFlat,
+export const propertyServices = {
+  createProperty,
+  getAllProperties,
+  updateProperty,
+  getSingleProperty,
+  getMyProperties,
+  deleteProperty,
 };

@@ -1,5 +1,5 @@
 // for all searching
-export const flatSearchableFields: string[] = [
+export const propertySearchableFields: string[] = [
   "location",
   "description",
   "amenities",
@@ -7,7 +7,7 @@ export const flatSearchableFields: string[] = [
 ];
 
 // for all filtering
-export const flatFilterableFields: string[] = [
+export const propertyFilterableFields: string[] = [
   "availability",
   "searchTerm",
   "location",

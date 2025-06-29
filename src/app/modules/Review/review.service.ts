@@ -23,7 +23,7 @@ const getAllReviews = async () => {
           },
         },
       },
-      flat: {
+      property: {
         select: {
           title: true,
         },
@@ -33,10 +33,10 @@ const getAllReviews = async () => {
   return result;
 };
 
-// Get all reviews for a specific flat
-const getFlatReviews = async (flatId: string) => {
+// Get all reviews for a specific property
+const getPropertyReviews = async (propertyId: string) => {
   const result = await prisma.review.findMany({
-    where: { flatId, isDeleted: false },
+    where: { propertyId, isDeleted: false },
     include: {
       user: {
         select: {
@@ -60,7 +60,7 @@ const getSingleReview = async (reviewId: string) => {
           email: true,
         },
       },
-      flat: {
+      property: {
         select: {
           title: true,
         },
@@ -75,29 +75,35 @@ const getSingleReview = async (reviewId: string) => {
   return result;
 };
 
-// Create a review for a specific flat
+// Create a review for a specific property
 const createReview = async (
   reviewData: Review,
   userId: string,
-  flatId: string
+  propertyId: string
 ) => {
-  const reviewCreateData = {
-    ...reviewData,
-    userId,
-    flatId,
-  };
-
+  const { name, email, rating, comment } = reviewData;
   const result = await prisma.review.create({
-    data: reviewCreateData,
+    data: {
+      name,
+      email,
+      rating,
+      comment,
+      user: {
+        connect: { id: userId },
+      },
+      property: {
+        connect: { id: propertyId },
+      },
+    },
   });
   return result;
 };
 
-const getFlatReviewByUser = async (userId: string, flatId: string) => {
+const getPropertyReviewByUser = async (userId: string, propertyId: string) => {
   return await prisma.review.findFirst({
     where: {
       userId: userId,
-      flatId: flatId,
+      propertyId: propertyId,
     },
   });
 };
@@ -115,7 +121,7 @@ const getUsersReview = async (userId: string) => {
           email: true,
         },
       },
-      flat: {
+      property: {
         select: {
           title: true,
         },
@@ -156,11 +162,11 @@ const deleteReview = async (reviewId: string) => {
 
 export const reviewServices = {
   getAllReviews,
-  getFlatReviews,
+  getPropertyReviews,
   getUsersReview,
   getSingleReview,
   createReview,
   updateReview,
   deleteReview,
-  getFlatReviewByUser,
+  getPropertyReviewByUser,
 };

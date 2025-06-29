@@ -19,7 +19,7 @@ router.get(
 
 router.post(
   "/",
-  auth(UserRole.AGENT, UserRole.ADMIN),
+  auth(UserRole.USER, UserRole.AGENT, UserRole.ADMIN),
   validateRequest(propertyValidationSchemas.createPropertySchema),
   propertyControllers.createProperty
 );

@@ -24,27 +24,40 @@ model User {
   payment     Payment[]
   review      Review[]
   Blog        Blog[]
+  property    Property[]
 
   @@map("users")
 }
 
 model UserProfile {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId     String   @unique @db.ObjectId
-  name       String?
-  image      String?
-  bio        String?
-  profession String?
-  address    String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String   @unique @db.ObjectId
+  name           String?
+  image          String?
+  bio            String?
+  profession     String?
+  company        String?
+  phone          String?
+  secondaryPhone String?
+  emailVerified  Boolean  @default(false)
+  phoneVerified  Boolean  @default(false)
+  street         String?
+  city           String?
+  state          String?
+  zipCode        String?
+  country        String?
+  website        String?
+  socialLinks    String[]
+  verified       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
 
-  @@map("user_profiles")
+  @@map("profiles")
 }
 
-model Flat {
+model Property {
   id             String       @id @default(auto()) @map("_id") @db.ObjectId
   title          String
   images         String[]
@@ -57,47 +70,58 @@ model Flat {
   parking        Boolean
   elevator       Boolean
   wifi           Boolean
-  location       String
+  street         String?
+  city           String?
+  state          String?
+  zipCode        String?
+  country        String?
   description    String
   amenities      String[]
   availability   Boolean      @default(true)
+  isFeatured     Boolean      @default(false)
   rent           Int
   advanceAmount  Int
-  userId         String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  userId         String       @unique @db.ObjectId
+  user           User         @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   booking Booking[]
   review  Review[]
 
-  @@map("flats")
+  @@map("properties")
 }
 
 model Booking {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  flatId    String    @db.ObjectId
-  flat      Flat      @relation(fields: [flatId], references: [id])
-  userId    String    @db.ObjectId
-  user      User      @relation(fields: [userId], references: [id])
-  status    Status    @default(PENDING)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  payment   Payment[]
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId String    @db.ObjectId
+  property   Property  @relation(fields: [propertyId], references: [id])
+  userId     String    @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  status     Status    @default(PENDING)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  payment    Payment[]
 
   @@map("bookings")
 }
 
 model Review {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  rating    String
-  comment   String
-  isDeleted Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  flatId    String   @db.ObjectId
-  flat      Flat?    @relation(fields: [flatId], references: [id])
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String
+  rating     String
+  comment    String
+  isDeleted  Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  userId     String    @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  propertyId String    @db.ObjectId
+  property   Property? @relation(fields: [propertyId], references: [id])
+
+  @@map("reviews")
 }
 
 model Payment {
@@ -139,6 +163,7 @@ enum Status {
 enum UserRole {
   SUPERADMIN
   ADMIN
+  AGENT
   USER
 }
 

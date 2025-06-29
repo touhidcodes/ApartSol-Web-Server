@@ -34,7 +34,7 @@ app.use((req, res, next) => {
 });
 
 // Application Routes
-app.use("/api", router);
+app.use("/api/v1", router);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running... !");

@@ -5,11 +5,12 @@ import { reviewServices } from "./review.service";
 
 const createReview = catchAsync(async (req, res) => {
   const { userId } = req.user;
-  const { flatId } = req.params;
+  const { propertyId } = req.params;
 
-  const existingReview = await reviewServices.getFlatReviewByUser(
+  const existingReview = await reviewServices.createReview(
+    req.body,
     userId,
-    flatId
+    propertyId
   );
 
   if (existingReview) {
@@ -21,7 +22,11 @@ const createReview = catchAsync(async (req, res) => {
     });
   }
 
-  const result = await reviewServices.createReview(req.body, userId, flatId);
+  const result = await reviewServices.createReview(
+    req.body,
+    userId,
+    propertyId
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -40,10 +45,10 @@ const getAllReviews = catchAsync(async (req, res) => {
   });
 });
 
-const getFlatReviews = catchAsync(async (req, res) => {
-  const { flatId } = req.params;
+const getPropertyReviews = catchAsync(async (req, res) => {
+  const { propertyId } = req.params;
 
-  const result = await reviewServices.getFlatReviews(flatId);
+  const result = await reviewServices.getPropertyReviews(propertyId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -103,7 +108,7 @@ const deleteReview = catchAsync(async (req, res) => {
 export const reviewControllers = {
   createReview,
   getAllReviews,
-  getFlatReviews,
+  getPropertyReviews,
   getSingleReview,
   getUsersReview,
   updateReview,

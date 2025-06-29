@@ -5,6 +5,8 @@ import { TUserData } from "./user.interface";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 import config from "../../config/config";
+import { jwtHelpers } from "../../utils/jwtHelpers";
+import { Secret } from "jsonwebtoken";
 
 const createUser = async (data: TUserData) => {
   const existingUser = await prisma.user.findUnique({
@@ -33,6 +35,7 @@ const createUser = async (data: TUserData) => {
         id: true,
         username: true,
         email: true,
+        role: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -46,7 +49,33 @@ const createUser = async (data: TUserData) => {
       },
     });
 
-    return createdUserData;
+    const accessToken = jwtHelpers.generateToken(
+      {
+        email: userData.email,
+        username: userData.username,
+        userId: userId,
+        role: userData.role,
+      },
+      config.jwt.access_token_secret as Secret,
+      config.jwt.access_token_expires_in as string
+    );
+
+    const refreshToken = jwtHelpers.generateToken(
+      {
+        email: userData.email,
+        username: userData.username,
+        userId: userId,
+        role: userData.role,
+      },
+      config.jwt.refresh_token_secret as Secret,
+      config.jwt.refresh_token_expires_in as string
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+      createdUserData,
+    };
   });
 
   return result;

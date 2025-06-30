@@ -9,13 +9,13 @@ const router = express.Router();
 
 router.get("/", propertyControllers.getAllProperties);
 
-router.get("/:propertyId", propertyControllers.getSingleProperty);
-
 router.get(
-  "/my-properties",
+  "/user",
   auth(UserRole.USER, UserRole.ADMIN),
-  propertyControllers.getMyProperties
+  propertyControllers.getUserProperties
 );
+
+router.get("/:propertyId", propertyControllers.getSingleProperty);
 
 router.post(
   "/",

@@ -6,10 +6,9 @@ import httpStatus from "http-status";
 const getBooking = async () => {
   const result = await prisma.booking.findMany({
     include: {
-      flat: {
+      property: {
         select: {
           title: true,
-          location: true,
           rent: true,
         },
       },
@@ -22,10 +21,9 @@ const getMyBookings = async (userId: string) => {
   const result = await prisma.booking.findMany({
     where: { userId: userId },
     include: {
-      flat: {
+      property: {
         select: {
           title: true,
-          location: true,
           rent: true,
         },
       },
@@ -34,20 +32,20 @@ const getMyBookings = async (userId: string) => {
   return result;
 };
 
-const bookingRequest = async (userId: string, flatId: string) => {
+const bookingRequest = async (userId: string, propertyId: string) => {
   const bookingRequestData = {
     userId,
-    flatId,
+    propertyId,
   };
 
   const checkRequest = await prisma.booking.findFirst({
-    where: { userId: userId, flatId: flatId },
+    where: { userId: userId, propertyId: propertyId },
   });
 
   if (checkRequest) {
     return {
       success: false,
-      message: "You have already booked this flat!",
+      message: "You have already booked this property!",
       data: checkRequest,
     };
   }

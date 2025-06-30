@@ -39,6 +39,7 @@ const getAllProperties = catchAsync(async (req, res) => {
 
 const getSingleProperty = catchAsync(async (req, res) => {
   const { propertyId } = req.params;
+
   const result = await propertyServices.getSingleProperty(propertyId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -48,8 +49,9 @@ const getSingleProperty = catchAsync(async (req, res) => {
   });
 });
 
-const getMyProperties = catchAsync(async (req, res) => {
+const getUserProperties = catchAsync(async (req, res) => {
   const { userId } = req.user;
+
   const result = await propertyServices.getMyProperties(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -88,6 +90,6 @@ export const propertyControllers = {
   getAllProperties,
   updateProperty,
   getSingleProperty,
-  getMyProperties,
+  getUserProperties,
   deleteProperty,
 };

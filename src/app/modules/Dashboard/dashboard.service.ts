@@ -84,7 +84,7 @@ const totalBookings = async () => {
 };
 
 const totalPost = async () => {
-  const result = await prisma.flat.count();
+  const result = await prisma.property.count();
 
   return result;
 };
@@ -124,7 +124,7 @@ const bookingsByUser = async (userId: string) => {
 };
 
 const totalFlatPostByUser = async (userId: string) => {
-  const result = await prisma.flat.count({
+  const result = await prisma.property.count({
     where: {
       userId: userId,
     },
@@ -136,7 +136,7 @@ const totalFlatPostByUser = async (userId: string) => {
 const flatPostByUser = async (userId: string) => {
   const dateFormat = "MM-DD";
 
-  const data = await prisma.flat.groupBy({
+  const data = await prisma.property.groupBy({
     by: ["createdAt"],
     where: {
       userId: userId,

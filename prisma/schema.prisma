@@ -67,9 +67,6 @@ model Property {
   totalBathrooms Int
   propertyType   PropertyType
   purpose        Purpose
-  parking        Boolean
-  elevator       Boolean
-  wifi           Boolean
   street         String?
   city           String?
   state          String?

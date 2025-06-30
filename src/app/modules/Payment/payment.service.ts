@@ -13,7 +13,7 @@ const createPayment = async (bookingId: string) => {
   // Fetch booking details from the database using Prisma
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { flat: true },
+    include: { property: true },
   });
 
   if (!booking) {
@@ -35,8 +35,8 @@ const createPayment = async (bookingId: string) => {
       {
         price_data: {
           currency: "usd",
-          product_data: { name: booking.flat.title },
-          unit_amount: booking.flat.rent * 100,
+          product_data: { name: booking.property.title },
+          unit_amount: booking.property.rent * 100,
         },
         quantity: 1,
       },

@@ -44,10 +44,6 @@ const createPropertySchema = z.object({
     propertyType: PropertyTypeEnum,
     purpose: PurposeEnum,
 
-    parking: z.boolean({ required_error: "Parking information is required" }),
-    elevator: z.boolean({ required_error: "Elevator information is required" }),
-    wifi: z.boolean({ required_error: "WiFi information is required" }),
-
     amenities: z
       .array(z.string({ required_error: "Amenity must be a string" }))
       .nonempty({ message: "At least one amenity is required" }),
@@ -87,9 +83,6 @@ const updatePropertySchema = z.object({
     totalBathrooms: z.number().int().min(1).max(4).optional(),
     propertyType: PropertyTypeEnum.optional(),
     purpose: PurposeEnum.optional(),
-    parking: z.boolean().optional(),
-    elevator: z.boolean().optional(),
-    wifi: z.boolean().optional(),
     amenities: z.array(z.string()).optional(),
     title: z.string().optional(),
     description: z.string().optional(),

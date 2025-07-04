@@ -2,7 +2,10 @@ import { Property, Prisma } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import { TPaginationOptions } from "../../interfaces/pagination";
 import { paginationHelper } from "../../utils/paginationHelpers";
-import { propertySearchableFields } from "./property.constants";
+import {
+  mapSortOptionToOrderBy,
+  propertySearchableFields,
+} from "./property.constants";
 
 const createProperty = async (propertyData: Property, userId: string) => {
   const data = {
@@ -31,6 +34,9 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
   } = params;
 
   const andConditions: Prisma.PropertyWhereInput[] = [];
+
+  // Match user ID
+  andConditions.push({ isDeleted: false });
 
   if (searchTerm) {
     andConditions.push({
@@ -174,14 +180,146 @@ const getSingleProperty = async (propertyId: string) => {
   return result;
 };
 
-const getMyProperties = async (userId: string) => {
+const getUserProperties = async (
+  userId: string,
+  params: any,
+  options: TPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
+  const {
+    searchTerm,
+    location,
+    availability,
+    minPrice,
+    maxPrice,
+    totalBedrooms,
+    amenities,
+    purpose,
+    sortBy,
+    ...filterData
+  } = params;
+
+  const andConditions: Prisma.PropertyWhereInput[] = [];
+
+  // Match user ID and not deleted
+  andConditions.push({ userId, isDeleted: false });
+
+  // Searchable fields
+  if (searchTerm) {
+    andConditions.push({
+      OR: propertySearchableFields.map((field) => ({
+        [field]: {
+          contains: searchTerm,
+          mode: "insensitive",
+        },
+      })),
+    });
+  }
+
+  // Availability filter
+  if (availability !== undefined) {
+    andConditions.push({
+      availability: availability === "true",
+    });
+  }
+
+  // Location filter
+  if (location) {
+    andConditions.push({
+      OR: [
+        { street: { contains: location, mode: "insensitive" } },
+        { city: { contains: location, mode: "insensitive" } },
+        { state: { contains: location, mode: "insensitive" } },
+        { zipCode: { contains: location, mode: "insensitive" } },
+        { country: { contains: location, mode: "insensitive" } },
+      ],
+    });
+  }
+
+  // Price filters
+  if (minPrice) {
+    andConditions.push({
+      rent: {
+        gte: parseFloat(minPrice),
+      },
+    });
+  }
+
+  if (maxPrice) {
+    andConditions.push({
+      rent: {
+        lte: parseFloat(maxPrice),
+      },
+    });
+  }
+
+  // Bedroom filter
+  if (totalBedrooms) {
+    andConditions.push({
+      totalBedrooms: {
+        equals: parseInt(totalBedrooms),
+      },
+    });
+  }
+
+  // Purpose
+  if (purpose) {
+    andConditions.push({
+      purpose: {
+        equals: purpose,
+      },
+    });
+  }
+
+  // Amenities
+  if (amenities && Array.isArray(amenities) && amenities.length > 0) {
+    andConditions.push({
+      amenities: {
+        hasEvery: amenities,
+      },
+    });
+  }
+
+  // Dynamic field filters
+  if (Object.keys(filterData).length > 0) {
+    const filterConditions = Object.keys(filterData).map((key) => ({
+      [key]: {
+        equals: (filterData as any)[key],
+      },
+    }));
+
+    andConditions.push({
+      AND: filterConditions,
+    });
+  }
+
+  const whereConditions: Prisma.PropertyWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const orderBy = sortBy
+    ? mapSortOptionToOrderBy(sortBy)
+    : { createdAt: Prisma.SortOrder.desc };
+
   const result = await prisma.property.findMany({
-    where: {
-      userId: userId,
-      availability: true,
-    },
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy,
   });
-  return result;
+
+  const total = await prisma.property.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 const updateProperty = async (
@@ -191,6 +329,7 @@ const updateProperty = async (
   const result = await prisma.property.update({
     where: {
       id: propertyId,
+      isDeleted: false,
     },
     data: propertyData,
   });
@@ -204,6 +343,7 @@ const deleteProperty = async (propertyId: string) => {
     },
     data: {
       availability: false,
+      isDeleted: true,
     },
   });
   return result;
@@ -214,6 +354,6 @@ export const propertyServices = {
   getAllProperties,
   updateProperty,
   getSingleProperty,
-  getMyProperties,
+  getUserProperties,
   deleteProperty,
 };

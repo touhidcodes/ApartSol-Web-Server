@@ -7,12 +7,6 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
-router.post(
-  "/register",
-  validateRequest(userValidationSchema.createUserSchema),
-  userControllers.createUser
-);
-
 router.get("/profile", auth(), userControllers.getUserProfile);
 
 router.get("/all-users", auth(UserRole.ADMIN), userControllers.getAllUser);

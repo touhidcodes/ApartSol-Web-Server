@@ -52,12 +52,25 @@ const getSingleProperty = catchAsync(async (req, res) => {
 const getUserProperties = catchAsync(async (req, res) => {
   const { userId } = req.user;
 
-  const result = await propertyServices.getMyProperties(userId);
+  const filters = queryPickers(req.query, propertyFilterableFields);
+  const options = queryPickers(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+
+  const result = await propertyServices.getUserProperties(
+    userId,
+    filters,
+    options
+  );
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Property added successfully!",
-    data: result,
+    message: "Properties retrieved successfully!",
+    meta: result.meta,
+    data: result.data,
   });
 });
 

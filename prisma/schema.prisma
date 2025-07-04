@@ -76,6 +76,7 @@ model Property {
   amenities      String[]
   availability   Boolean      @default(true)
   isFeatured     Boolean      @default(false)
+  isDeleted      Boolean      @default(false)
   rent           Int
   advanceAmount  Int
   userId         String       @unique @db.ObjectId

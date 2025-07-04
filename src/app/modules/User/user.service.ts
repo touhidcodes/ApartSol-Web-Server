@@ -1,85 +1,8 @@
-import * as bcrypt from "bcrypt";
 import prisma from "../../utils/prisma";
-import { Prisma, User, UserProfile } from "@prisma/client";
-import { TUserData } from "./user.interface";
+import { Prisma, UserProfile } from "@prisma/client";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 import config from "../../config/config";
-import { jwtHelpers } from "../../utils/jwtHelpers";
-import { Secret } from "jsonwebtoken";
-
-const createUser = async (data: TUserData) => {
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      username: data.username,
-    },
-  });
-
-  if (existingUser) {
-    throw new APIError(httpStatus.CONFLICT, "Username is already taken");
-  }
-
-  const hashedPassword: string = await bcrypt.hash(data.password, 12);
-
-  const userData = {
-    username: data.username,
-    email: data.email,
-    role: data.role,
-    password: hashedPassword,
-  };
-
-  const result = await prisma.$transaction(async (transactionClient) => {
-    const createdUserData = await transactionClient.user.create({
-      data: userData,
-      select: {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-
-    const userId = createdUserData.id;
-
-    await transactionClient.userProfile.create({
-      data: {
-        userId: userId,
-      },
-    });
-
-    const accessToken = jwtHelpers.generateToken(
-      {
-        email: userData.email,
-        username: userData.username,
-        userId: userId,
-        role: userData.role,
-      },
-      config.jwt.access_token_secret as Secret,
-      config.jwt.access_token_expires_in as string
-    );
-
-    const refreshToken = jwtHelpers.generateToken(
-      {
-        email: userData.email,
-        username: userData.username,
-        userId: userId,
-        role: userData.role,
-      },
-      config.jwt.refresh_token_secret as Secret,
-      config.jwt.refresh_token_expires_in as string
-    );
-
-    return {
-      accessToken,
-      refreshToken,
-      createdUserData,
-    };
-  });
-
-  return result;
-};
 
 const getUser = async (id: string) => {
   const result = await prisma.user.findUniqueOrThrow({
@@ -224,7 +147,6 @@ const updateUserStatus = async (
 };
 
 export const userServices = {
-  createUser,
   getUser,
   getUserProfile,
   updateUser,

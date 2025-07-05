@@ -5,8 +5,9 @@ import sendResponse from "../../utils/sendResponse";
 import { paymentServices } from "./payment.service";
 
 const createPayment = catchAsync(async (req: Request, res: Response) => {
-  const { bookingId } = req.body;
-  const result = await paymentServices.createPayment(bookingId);
+  const { paymentData } = req.body;
+
+  const result = await paymentServices.createPayment(paymentData);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -18,26 +19,25 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
 
 const processWebhook = catchAsync(async (req: Request, res: Response) => {
   const sig = req.headers["stripe-signature"] as string;
-  console.log("webhook signature", sig);
-  console.log("body", req.body);
 
   if (!sig) {
     return res.status(httpStatus.BAD_REQUEST).send("Missing Stripe signature.");
   }
 
-  // Call the service to process the webhook
-  const result = await paymentServices.processWebhook(req.body, sig!);
+  // Send raw body and signature to service
+  const result = await paymentServices.processWebhook(req.body, sig);
 
   sendResponse(res, {
-    statusCode: httpStatus.CREATED,
+    statusCode: httpStatus.OK,
     success: true,
-    message: "Payment validated successfully!",
+    message: "Webhook processed successfully!",
     data: result,
   });
 });
 
 const getPaymentStatus = catchAsync(async (req: Request, res: Response) => {
   const { sessionId } = req.params;
+
   const result = await paymentServices.getPaymentStatus(sessionId);
 
   sendResponse(res, {

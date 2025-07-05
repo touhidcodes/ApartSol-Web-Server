@@ -11,7 +11,9 @@ router.post(
   auth(UserRole.USER),
   paymentController.createPayment
 );
+
 router.get("/payment-status/:sessionId", paymentController.getPaymentStatus);
+
 router.post(
   "/webhook",
   bodyParser.raw({ type: "application/json" }),

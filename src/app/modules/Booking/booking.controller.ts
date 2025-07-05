@@ -4,8 +4,8 @@ import sendResponse from "../../utils/sendResponse";
 import { bookingServices } from "./booking.service";
 import { Request } from "express";
 
-const getBooking = catchAsync(async (req, res) => {
-  const result = await bookingServices.getBooking();
+const getBookings = catchAsync(async (req, res) => {
+  const result = await bookingServices.getBookings();
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -14,10 +14,22 @@ const getBooking = catchAsync(async (req, res) => {
   });
 });
 
-const getMyBookings = catchAsync(async (req: Request, res) => {
+const getUserBookings = catchAsync(async (req: Request, res) => {
   const { userId } = req.user;
 
-  const result = await bookingServices.getMyBookings(userId);
+  const result = await bookingServices.getUserBookings(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Your bookings retrieved successfully!",
+    data: result,
+  });
+});
+
+const getBookingById = catchAsync(async (req: Request, res) => {
+  const { bookingId } = req.params;
+
+  const result = await bookingServices.getBookingById(bookingId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -59,8 +71,9 @@ const updateBooking = catchAsync(async (req, res) => {
 });
 
 export const bookingControllers = {
-  getBooking,
-  getMyBookings,
+  getBookings,
+  getUserBookings,
+  getBookingById,
   bookingRequest,
   updateBooking,
 };

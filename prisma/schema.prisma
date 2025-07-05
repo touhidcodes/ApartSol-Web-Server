@@ -162,26 +162,30 @@ model Booking {
 }
 
 model Payment {
-  id             String        @id @default(auto()) @map("_id") @db.ObjectId
-  amount         Float
-  currency       String        @default("USD")
-  status         PaymentStatus @default(PENDING)
-  paymentMethod  PaymentMethod
-  stripeId       String?
-  sslCommerzId   String?
-  transactionId  String?
-  couponId       String?       @db.ObjectId
-  coupon         Coupon?       @relation(fields: [couponId], references: [id])
-  discountAmount Float?        @default(0)
-  vatAmount      Float?        @default(0)
-  serviceCharge  Float?        @default(0)
-  finalAmount    Float
-  userId         String        @db.ObjectId
-  user           User          @relation(fields: [userId], references: [id])
-  bookingId      String        @db.ObjectId
-  booking        Booking       @relation(fields: [bookingId], references: [id])
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  amount          Float
+  currency        String        @default("USD")
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   PaymentMethod
+  stripeId        String?
+  sslCommerzId    String?
+  transactionId   String?
+  couponId        String?       @db.ObjectId
+  coupon          Coupon?       @relation(fields: [couponId], references: [id])
+  discountAmount  Float?        @default(0)
+  vatAmount       Float?        @default(0)
+  serviceCharge   Float?        @default(0)
+  finalAmount     Float
+  billingName     String
+  billingEmail    String
+  billingPhone    String
+  billingLocation String
+  userId          String        @db.ObjectId
+  user            User          @relation(fields: [userId], references: [id])
+  bookingId       String        @db.ObjectId
+  booking         Booking       @relation(fields: [bookingId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
   @@map("payments")
 }

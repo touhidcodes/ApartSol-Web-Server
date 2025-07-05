@@ -3,14 +3,24 @@ import prisma from "../../utils/prisma";
 import config from "../../config/config";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
+import { TCreatePaymentInput } from "./payment.interface";
 
 const stripe = new Stripe(config.stripe.secret_key!, {
   apiVersion: "2022-11-15" as any,
   typescript: true,
 });
 
-const createPayment = async (bookingId: string) => {
-  // Fetch booking details from the database using Prisma
+const createPayment = async (paymentData: TCreatePaymentInput) => {
+  const {
+    bookingId,
+    finalAmount,
+    billingName,
+    billingEmail,
+    billingPhone,
+    billingLocation,
+  } = paymentData;
+
+  // Fetch booking and user
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
     include: { property: true },
@@ -21,14 +31,14 @@ const createPayment = async (bookingId: string) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: booking?.userId },
+    where: { id: booking.userId },
   });
 
   if (!user) {
     throw new APIError(httpStatus.NOT_FOUND, "User not found");
   }
 
-  // Create a Stripe checkout session for the selected flat booking
+  // Create Stripe session
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
@@ -36,7 +46,7 @@ const createPayment = async (bookingId: string) => {
         price_data: {
           currency: "usd",
           product_data: { name: booking.property.title },
-          unit_amount: booking.property.price * 100,
+          unit_amount: Math.round(finalAmount * 100), // Stripe uses cents
         },
         quantity: 1,
       },
@@ -47,20 +57,24 @@ const createPayment = async (bookingId: string) => {
     metadata: {
       bookingId: booking.id,
     },
-    customer_email: user.email,
+    customer_email: billingEmail,
   });
 
-  // Store payment information in the database using Prisma
+  // Save payment info to DB
   const paymentRecord = await prisma.payment.create({
     data: {
-      amount: booking.property.price,
+      amount: booking.totalAmount,
+      finalAmount,
       currency: "USD",
       status: "PENDING",
       paymentMethod: "STRIPE",
       stripeId: session.id,
-      finalAmount: booking.property.price,
-      userId: booking?.userId,
-      bookingId: booking?.id,
+      userId: booking.userId,
+      bookingId: booking.id,
+      billingName,
+      billingEmail,
+      billingPhone,
+      billingLocation,
     },
   });
 
@@ -71,71 +85,68 @@ const processWebhook = async (payload: Buffer, sig: string) => {
   let event: Stripe.Event;
 
   try {
-    if (config.stripe.webhook_secret as string) {
-      event = stripe.webhooks.constructEvent(
-        payload,
-        sig!,
-        config.stripe.webhook_secret as string
-      );
-    } else {
+    if (!config.stripe.webhook_secret) {
       throw new APIError(
         httpStatus.BAD_REQUEST,
-        `Webhook endpoint secret not found`
+        "Webhook secret not configured"
       );
     }
 
-    // Handle event types
+    event = stripe.webhooks.constructEvent(
+      payload,
+      sig,
+      config.stripe.webhook_secret
+    );
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
+        const bookingId = session.metadata?.bookingId;
 
-        try {
-          // Find the booking ID from the session metadata
-          const bookingId = session.metadata?.bookingId;
-          console.log(bookingId);
-
-          if (!bookingId) {
-            throw new APIError(
-              httpStatus.NOT_FOUND,
-              "Booking ID not found in session metadata"
-            );
-          }
-
-          await prisma.$transaction(async (tx) => {
-            // Update booking status to "BOOKED"
-            await tx.booking.update({
-              where: { id: bookingId },
-              data: { status: "BOOKED" },
-            });
-
-            // Update payment status to "COMPLETED"
-            await tx.payment.updateMany({
-              where: { bookingId: bookingId },
-              data: { status: "COMPLETED" },
-            });
-          });
-        } catch (error) {
+        if (!bookingId) {
           throw new APIError(
-            httpStatus.NOT_MODIFIED,
-            "Error updating booking record"
+            httpStatus.BAD_REQUEST,
+            "Missing bookingId in metadata"
           );
         }
+
+        await prisma.$transaction(async (tx) => {
+          await tx.booking.update({
+            where: { id: bookingId },
+            data: { status: "BOOKED" },
+          });
+
+          await tx.payment.updateMany({
+            where: { bookingId },
+            data: { status: "COMPLETED" },
+          });
+        });
 
         break;
       }
 
       default:
-      // console.log(`Unhandled event type: ${event.type}`);
+        console.warn(`Unhandled Stripe event type: ${event.type}`);
     }
   } catch (err) {
-    console.log("err", err);
-    throw new APIError(httpStatus.BAD_REQUEST, `Webhook error`);
+    console.error("Webhook Error:", err);
+    throw new APIError(httpStatus.BAD_REQUEST, "Webhook processing failed");
   }
 };
 
 const getPaymentStatus = async (sessionId: string) => {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
-  return session;
+
+  if (!session) {
+    throw new APIError(httpStatus.NOT_FOUND, "Session not found");
+  }
+
+  return {
+    status: session.payment_status,
+    customer_email: session.customer_email,
+    amount_total: session.amount_total,
+    currency: session.currency,
+  };
 };
 
 export const paymentServices = {

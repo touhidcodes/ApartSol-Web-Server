@@ -70,7 +70,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
 
   if (minPrice) {
     andConditions.push({
-      rent: {
+      price: {
         gte: parseFloat(minPrice),
       },
     });
@@ -78,7 +78,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
 
   if (maxPrice) {
     andConditions.push({
-      rent: {
+      price: {
         lte: parseFloat(maxPrice),
       },
     });
@@ -243,7 +243,7 @@ const getUserProperties = async (
   // Price filters
   if (minPrice) {
     andConditions.push({
-      rent: {
+      price: {
         gte: parseFloat(minPrice),
       },
     });
@@ -251,7 +251,7 @@ const getUserProperties = async (
 
   if (maxPrice) {
     andConditions.push({
-      rent: {
+      price: {
         lte: parseFloat(maxPrice),
       },
     });

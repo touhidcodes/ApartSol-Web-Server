@@ -10,7 +10,7 @@ interface BookingRequestData {
   notes?: string;
 }
 
-const getBooking = async () => {
+const getBookings = async () => {
   const result = await prisma.booking.findMany({
     include: {
       property: {
@@ -30,7 +30,7 @@ const getBooking = async () => {
   return result;
 };
 
-const getMyBookings = async (userId: string) => {
+const getUserBookings = async (userId: string) => {
   const result = await prisma.booking.findMany({
     where: { userId: userId },
     include: {
@@ -92,22 +92,33 @@ const bookingRequest = async (bookingData: BookingRequestData) => {
     };
   }
 
-  // Create new booking
-  const result = await prisma.booking.create({
-    data: {
-      userId,
-      propertyId,
-      totalAmount,
-      notes,
-    },
-    include: {
-      property: {
-        select: {
-          title: true,
-          price: true,
+  // Use transaction to ensure both operations succeed or fail together
+  const result = await prisma.$transaction(async (tx) => {
+    // Create new booking
+    const booking = await tx.booking.create({
+      data: {
+        userId,
+        propertyId,
+        totalAmount,
+        notes,
+      },
+      include: {
+        property: {
+          select: {
+            title: true,
+            price: true,
+          },
         },
       },
-    },
+    });
+
+    // Update property availability to false
+    await tx.property.update({
+      where: { id: propertyId },
+      data: { availability: false },
+    });
+
+    return booking;
   });
 
   return result;
@@ -117,26 +128,7 @@ const getBookingById = async (bookingId: string) => {
   const result = await prisma.booking.findUnique({
     where: { id: bookingId },
     include: {
-      property: {
-        select: {
-          title: true,
-          price: true,
-        },
-      },
-      user: {
-        select: {
-          username: true,
-          email: true,
-        },
-      },
-      payment: {
-        select: {
-          status: true,
-          amount: true,
-          finalAmount: true,
-          paymentMethod: true,
-        },
-      },
+      property: true,
     },
   });
 
@@ -235,9 +227,9 @@ const cancelBooking = async (bookingId: string, userId: string) => {
 
 export const bookingServices = {
   bookingRequest,
-  getBooking,
+  getBookings,
   updateBooking,
-  getMyBookings,
+  getUserBookings,
   getBookingById,
   cancelBooking,
 };

@@ -8,13 +8,20 @@ import { UserRole } from "@prisma/client";
 const router = express.Router();
 
 // Get all bookings (admin only)
-router.get("/all", auth(UserRole.ADMIN), bookingControllers.getBooking);
+router.get("/all", auth(UserRole.ADMIN), bookingControllers.getBookings);
 
 // Get current user's bookings
 router.get(
   "/user",
   auth(UserRole.ADMIN, UserRole.USER),
-  bookingControllers.getMyBookings
+  bookingControllers.getUserBookings
+);
+
+// Get booking by Id
+router.get(
+  "/:bookingId",
+  auth(UserRole.ADMIN, UserRole.USER),
+  bookingControllers.getBookingById
 );
 
 // Create a new booking

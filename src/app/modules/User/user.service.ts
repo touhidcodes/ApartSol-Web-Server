@@ -33,27 +33,20 @@ const getAllUser = async (currentUserEmail: string) => {
 };
 
 const getUserWithProfile = async (id: string) => {
-  const user = await prisma.user.findUniqueOrThrow({
+  const result = await prisma.user.findUniqueOrThrow({
     where: {
       id: id,
+      status: "ACTIVE",
     },
     select: {
       id: true,
-      email: true,
-      role: true,
       username: true,
+      email: true,
+      userProfile: true,
     },
   });
 
-  const profile = await prisma.userProfile.findUniqueOrThrow({
-    where: {
-      userId: user.id,
-    },
-  });
-  return {
-    ...user,
-    ...profile,
-  };
+  return result;
 };
 
 const getUserProfile = async (id: string) => {

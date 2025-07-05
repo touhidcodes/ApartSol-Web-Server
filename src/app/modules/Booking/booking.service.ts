@@ -3,13 +3,26 @@ import prisma from "../../utils/prisma";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
 
+interface BookingRequestData {
+  userId: string;
+  propertyId: string;
+  totalAmount: number;
+  notes?: string;
+}
+
 const getBooking = async () => {
   const result = await prisma.booking.findMany({
     include: {
       property: {
         select: {
           title: true,
-          rent: true,
+          price: true,
+        },
+      },
+      user: {
+        select: {
+          username: true,
+          email: true,
         },
       },
     },
@@ -24,7 +37,14 @@ const getMyBookings = async (userId: string) => {
       property: {
         select: {
           title: true,
-          rent: true,
+          price: true,
+        },
+      },
+      payment: {
+        select: {
+          status: true,
+          amount: true,
+          finalAmount: true,
         },
       },
     },
@@ -32,27 +52,98 @@ const getMyBookings = async (userId: string) => {
   return result;
 };
 
-const bookingRequest = async (userId: string, propertyId: string) => {
-  const bookingRequestData = {
-    userId,
-    propertyId,
-  };
+const bookingRequest = async (bookingData: BookingRequestData) => {
+  const { userId, propertyId, totalAmount, notes } = bookingData;
 
-  const checkRequest = await prisma.booking.findFirst({
-    where: { userId: userId, propertyId: propertyId },
+  // Check if property exists
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId },
   });
 
-  if (checkRequest) {
+  if (!property) {
+    throw new APIError(httpStatus.NOT_FOUND, "Property not found!");
+  }
+
+  // Check if user exists
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new APIError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  // Check if user already has any booking (pending/confirmed) for this property
+  const existingBooking = await prisma.booking.findFirst({
+    where: {
+      userId,
+      propertyId,
+      status: {
+        in: ["PENDING", "CONFIRMED", "BOOKED"],
+      },
+    },
+  });
+
+  if (existingBooking) {
     return {
       success: false,
       message: "You have already booked this property!",
-      data: checkRequest,
+      data: null,
     };
   }
 
+  // Create new booking
   const result = await prisma.booking.create({
-    data: bookingRequestData,
+    data: {
+      userId,
+      propertyId,
+      totalAmount,
+      notes,
+    },
+    include: {
+      property: {
+        select: {
+          title: true,
+          price: true,
+        },
+      },
+    },
   });
+
+  return result;
+};
+
+const getBookingById = async (bookingId: string) => {
+  const result = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      property: {
+        select: {
+          title: true,
+          price: true,
+        },
+      },
+      user: {
+        select: {
+          username: true,
+          email: true,
+        },
+      },
+      payment: {
+        select: {
+          status: true,
+          amount: true,
+          finalAmount: true,
+          paymentMethod: true,
+        },
+      },
+    },
+  });
+
+  if (!result) {
+    throw new APIError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
   return result;
 };
 
@@ -60,12 +151,85 @@ const updateBooking = async (
   bookingId: string,
   bookingData: Partial<Booking>
 ) => {
+  const existingBooking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!existingBooking) {
+    throw new APIError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
   const result = await prisma.booking.update({
     where: {
       id: bookingId,
     },
     data: bookingData,
+    include: {
+      property: {
+        select: {
+          title: true,
+          price: true,
+        },
+      },
+      user: {
+        select: {
+          username: true,
+          email: true,
+        },
+      },
+      payment: {
+        select: {
+          status: true,
+          amount: true,
+          finalAmount: true,
+        },
+      },
+    },
   });
+
+  return result;
+};
+
+const cancelBooking = async (bookingId: string, userId: string) => {
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+  });
+
+  if (!booking) {
+    throw new APIError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
+  if (booking.userId !== userId) {
+    throw new APIError(
+      httpStatus.FORBIDDEN,
+      "You can only cancel your own bookings"
+    );
+  }
+
+  if (booking.status === "CANCELLED") {
+    throw new APIError(httpStatus.BAD_REQUEST, "Booking is already cancelled");
+  }
+
+  if (booking.status === "COMPLETED") {
+    throw new APIError(
+      httpStatus.BAD_REQUEST,
+      "Cannot cancel completed booking"
+    );
+  }
+
+  const result = await prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: "CANCELLED" },
+    include: {
+      property: {
+        select: {
+          title: true,
+          price: true,
+        },
+      },
+    },
+  });
+
   return result;
 };
 
@@ -74,4 +238,6 @@ export const bookingServices = {
   getBooking,
   updateBooking,
   getMyBookings,
+  getBookingById,
+  cancelBooking,
 };

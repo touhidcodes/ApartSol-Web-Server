@@ -36,7 +36,7 @@ const createPayment = async (bookingId: string) => {
         price_data: {
           currency: "usd",
           product_data: { name: booking.property.title },
-          unit_amount: booking.property.rent * 100,
+          unit_amount: booking.property.price * 100,
         },
         quantity: 1,
       },
@@ -53,10 +53,12 @@ const createPayment = async (bookingId: string) => {
   // Store payment information in the database using Prisma
   const paymentRecord = await prisma.payment.create({
     data: {
-      amount: session.amount_total!,
-      currency: session.currency || "usd",
-      status: session.status!,
+      amount: booking.property.price,
+      currency: "USD",
+      status: "PENDING",
+      paymentMethod: "STRIPE",
       stripeId: session.id,
+      finalAmount: booking.property.price,
       userId: booking?.userId,
       bookingId: booking?.id,
     },
@@ -106,10 +108,10 @@ const processWebhook = async (payload: Buffer, sig: string) => {
               data: { status: "BOOKED" },
             });
 
-            // Update payment status to "closed"
+            // Update payment status to "COMPLETED"
             await tx.payment.updateMany({
               where: { bookingId: bookingId },
-              data: { status: "closed" },
+              data: { status: "COMPLETED" },
             });
           });
         } catch (error) {

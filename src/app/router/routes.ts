@@ -24,7 +24,7 @@ const moduleRoutes = [
     route: propertyRoutes,
   },
   {
-    path: "/",
+    path: "/bookings",
     route: bookingRoutes,
   },
   {

@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Use JSON parser for all non-webhook routes
 app.use((req, res, next) => {
-  if (req.originalUrl === "/api/webhook") {
+  if (req.originalUrl === "/api/v1/webhook") {
     next();
   } else {
     bodyParser.json()(req, res, next);

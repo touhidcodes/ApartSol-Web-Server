@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const PropertyTypeEnum = z.enum(["RESIDENTIAL", "COMMERCIAL"]);
-const PurposeEnum = z.enum(["RENT", "SALE"]);
+const PurposeEnum = z.enum(["PRICE", "SALE"]);
 
 const createPropertySchema = z.object({
   body: z.object({
@@ -57,10 +57,10 @@ const createPropertySchema = z.object({
     zipCode: z.string().optional(),
     country: z.string().optional(),
 
-    rent: z
+    price: z
       .number({
         required_error:
-          "Rent amount is required and must be a positive integer",
+          "Price amount is required and must be a positive integer",
       })
       .int()
       .min(1),
@@ -91,7 +91,7 @@ const updatePropertySchema = z.object({
     state: z.string().optional(),
     zipCode: z.string().optional(),
     country: z.string().optional(),
-    rent: z.number().int().min(1).optional(),
+    price: z.number().int().min(1).optional(),
     advanceAmount: z.number().int().min(1).optional(),
   }),
 });

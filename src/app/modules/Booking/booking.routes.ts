@@ -7,27 +7,27 @@ import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
-router.get(
-  "/booking-requests",
-  auth(UserRole.ADMIN),
-  bookingControllers.getBooking
-);
+// Get all bookings (admin only)
+router.get("/all", auth(UserRole.ADMIN), bookingControllers.getBooking);
 
+// Get current user's bookings
 router.get(
-  "/my-bookings",
+  "/user",
   auth(UserRole.ADMIN, UserRole.USER),
   bookingControllers.getMyBookings
 );
 
+// Create a new booking
 router.post(
-  "/booking-applications",
+  "/:propertyId",
   auth(UserRole.ADMIN, UserRole.USER),
   validateRequest(bookingValidationSchemas.bookingRequestSchema),
   bookingControllers.bookingRequest
 );
 
+// Update a specific booking
 router.put(
-  "/booking-requests/:bookingId",
+  "/:bookingId",
   auth(UserRole.ADMIN),
   validateRequest(bookingValidationSchemas.updateBookingSchema),
   bookingControllers.updateBooking

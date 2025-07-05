@@ -2,9 +2,10 @@ import { z } from "zod";
 
 const bookingRequestSchema = z.object({
   body: z.object({
-    flatId: z.string({
-      required_error: "Flat Id  is required",
+    totalAmount: z.number({
+      required_error: "Total amount is required",
     }),
+    notes: z.string().optional(),
   }),
 });
 

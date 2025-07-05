@@ -157,19 +157,22 @@ const getSingleProperty = async (propertyId: string) => {
   const result = await prisma.property.findUniqueOrThrow({
     where: {
       id: propertyId,
-      availability: true,
+      isDeleted: false,
     },
     include: {
       user: {
         select: {
-          UserProfile: true,
+          id: true,
+          username: true,
+          email: true,
+          userProfile: true,
         },
       },
       review: {
         include: {
           user: {
             include: {
-              UserProfile: true,
+              userProfile: true,
             },
           },
         },

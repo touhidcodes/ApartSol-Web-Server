@@ -53,7 +53,7 @@ const createPayment = async (paymentData: TCreatePaymentInput) => {
     ],
     mode: "payment",
     success_url: `${config.client.client_url}/checkout/success`,
-    cancel_url: `${config.client.client_url}/checkout/cancel`,
+    cancel_url: `${config.client.client_url}/checkout/failed`,
     metadata: {
       bookingId: booking.id,
     },

@@ -38,6 +38,9 @@ const getUserBookings = async (userId: string) => {
         select: {
           title: true,
           price: true,
+          city: true,
+          state: true,
+          country: true,
         },
       },
       payment: {

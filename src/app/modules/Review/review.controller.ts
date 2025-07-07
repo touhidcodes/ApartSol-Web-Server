@@ -2,6 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { reviewServices } from "./review.service";
+import queryPickers from "../../utils/queryPickers";
 
 const createReview = catchAsync(async (req, res) => {
   const { userId } = req.user;
@@ -36,12 +37,19 @@ const createReview = catchAsync(async (req, res) => {
 });
 
 const getAllReviews = catchAsync(async (req, res) => {
-  const result = await reviewServices.getAllReviews();
+  const options = queryPickers(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+  const result = await reviewServices.getAllReviews(options);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Reviews retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -71,13 +79,19 @@ const getSingleReview = catchAsync(async (req, res) => {
 
 const getUsersReview = catchAsync(async (req, res) => {
   const { userId } = req.user;
-
-  const result = await reviewServices.getUsersReview(userId);
+  const options = queryPickers(req.query, [
+    "limit",
+    "page",
+    "sortBy",
+    "sortOrder",
+  ]);
+  const result = await reviewServices.getUsersReview(userId, options);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Users review retrieved successfully!",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 

@@ -1,13 +1,24 @@
-import { Review } from "@prisma/client";
+import { Prisma, Review } from "@prisma/client";
 import prisma from "../../utils/prisma";
 import APIError from "../../errors/APIError";
 import httpStatus from "http-status";
+import { paginationHelper } from "../../utils/paginationHelpers";
+import { TPaginationOptions } from "../../interfaces/pagination";
 
 // Get all reviews
-const getAllReviews = async () => {
+const getAllReviews = async (options: TPaginationOptions) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
+  const whereConditions: Prisma.ReviewWhereInput = {
+    isDeleted: false,
+  };
+
   const result = await prisma.review.findMany({
-    where: {
-      isDeleted: false,
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      createdAt: "desc",
     },
     include: {
       user: {
@@ -15,7 +26,7 @@ const getAllReviews = async () => {
           username: true,
           email: true,
           role: true,
-          UserProfile: {
+          userProfile: {
             select: {
               image: true,
               name: true,
@@ -30,7 +41,19 @@ const getAllReviews = async () => {
       },
     },
   });
-  return result;
+
+  const total = await prisma.review.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 // Get all reviews for a specific property
@@ -108,11 +131,20 @@ const getPropertyReviewByUser = async (userId: string, propertyId: string) => {
   });
 };
 
-const getUsersReview = async (userId: string) => {
-  return await prisma.review.findMany({
-    where: {
-      userId: userId,
-      isDeleted: false,
+const getUsersReview = async (userId: string, options: TPaginationOptions) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+
+  const whereConditions: Prisma.ReviewWhereInput = {
+    userId,
+    isDeleted: false,
+  };
+
+  const result = await prisma.review.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      createdAt: "desc",
     },
     include: {
       user: {
@@ -128,6 +160,19 @@ const getUsersReview = async (userId: string) => {
       },
     },
   });
+
+  const total = await prisma.review.count({
+    where: whereConditions,
+  });
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
 };
 
 // Update a review by ID

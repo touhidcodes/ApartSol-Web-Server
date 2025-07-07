@@ -30,14 +30,16 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     totalBedrooms,
     amenities,
     purpose,
+    sortBy,
     ...filterData
   } = params;
 
   const andConditions: Prisma.PropertyWhereInput[] = [];
 
-  // Match user ID
+  // Base condition: Not deleted
   andConditions.push({ isDeleted: false });
 
+  // Search term filtering across searchable fields
   if (searchTerm) {
     andConditions.push({
       OR: propertySearchableFields.map((field) => ({
@@ -49,13 +51,14 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
+  // Availability
   if (availability !== undefined) {
-    const availabilityFilter = availability === "true";
     andConditions.push({
-      availability: availabilityFilter,
+      availability: availability === "true",
     });
   }
 
+  // Location
   if (location) {
     andConditions.push({
       OR: [
@@ -68,6 +71,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
+  // Price range
   if (minPrice) {
     andConditions.push({
       price: {
@@ -84,6 +88,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
+  // Bedrooms
   if (totalBedrooms) {
     andConditions.push({
       totalBedrooms: {
@@ -92,6 +97,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
+  // Purpose
   if (purpose) {
     andConditions.push({
       purpose: {
@@ -100,7 +106,7 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
-  // Handle amenities filter
+  // Amenities
   if (amenities && Array.isArray(amenities) && amenities.length > 0) {
     andConditions.push({
       amenities: {
@@ -109,11 +115,11 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
-  // Handle other filter data
+  // Generic filter fields
   if (Object.keys(filterData).length > 0) {
-    const filterConditions = Object.keys(filterData).map((key) => ({
+    const filterConditions = Object.entries(filterData).map(([key, value]) => ({
       [key]: {
-        equals: (filterData as any)[key],
+        equals: value,
       },
     }));
 
@@ -122,26 +128,23 @@ const getAllProperties = async (params: any, options: TPaginationOptions) => {
     });
   }
 
+  // Final where object
   const whereConditions: Prisma.PropertyWhereInput =
     andConditions.length > 0 ? { AND: andConditions } : {};
+
+  // Handle sort mapping
+  const orderBy = sortBy
+    ? mapSortOptionToOrderBy(sortBy)
+    : { createdAt: "desc" as Prisma.SortOrder };
 
   const result = await prisma.property.findMany({
     where: whereConditions,
     skip,
     take: limit,
-    orderBy:
-      options.sortBy && options.sortOrder
-        ? {
-            [options.sortBy]: options.sortOrder,
-          }
-        : {
-            createdAt: "desc",
-          },
+    orderBy,
   });
 
-  const total = await prisma.property.count({
-    where: whereConditions,
-  });
+  const total = await prisma.property.count({ where: whereConditions });
 
   return {
     meta: {

@@ -34,9 +34,9 @@ export const mapSortOptionToOrderBy = (
     case "oldest":
       return { createdAt: "asc" };
     case "rent-high":
-      return { rent: "desc" };
+      return { price: "desc" };
     case "rent-low":
-      return { rent: "asc" };
+      return { price: "asc" };
     case "title-az":
       return { title: "asc" };
     case "title-za":

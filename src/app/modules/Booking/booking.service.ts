@@ -17,6 +17,9 @@ const getBookings = async () => {
         select: {
           title: true,
           price: true,
+          state: true,
+          city: true,
+          country: true,
         },
       },
       user: {

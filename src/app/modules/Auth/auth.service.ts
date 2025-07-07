@@ -12,7 +12,6 @@ import { hashedPassword } from "../../utils/hashedPassword";
 import { TUserData } from "../User/user.interface";
 
 const createUser = async (data: TUserData) => {
-  console.log(data);
   const existingUser = await prisma.user.findUnique({
     where: {
       username: data.username,

@@ -201,7 +201,6 @@ const getPropertyGrowthStats = catchAsync(async (req, res) => {
 
 const getMonthlyRevenueBreakdown = catchAsync(async (req, res) => {
   const result = await dashboardServices.getMonthlyRevenueBreakdown();
-  console.log(result);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

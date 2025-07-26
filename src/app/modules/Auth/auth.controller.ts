@@ -9,8 +9,11 @@ const createUser = catchAsync(async (req, res) => {
   const { refreshToken } = result;
 
   res.cookie("refreshToken", refreshToken, {
-    secure: false,
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
   });
 
   sendResponse(res, {
@@ -32,8 +35,11 @@ const loginUser = catchAsync(async (req, res) => {
   const { refreshToken } = result;
 
   res.cookie("refreshToken", refreshToken, {
-    secure: false,
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/",
+    maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
   });
 
   sendResponse(res, {

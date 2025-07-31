@@ -82,6 +82,7 @@ const createPayment = async (paymentData: TCreatePaymentInput) => {
 };
 
 const processWebhook = async (payload: Buffer, sig: string) => {
+  console.log("processing webhook from service");
   let event: Stripe.Event;
 
   try {
@@ -127,6 +128,7 @@ const processWebhook = async (payload: Buffer, sig: string) => {
 
       default:
         console.warn(`Unhandled Stripe event type: ${event.type}`);
+        console.log(`Unhandled Stripe event type: ${event.type}`);
     }
   } catch (err) {
     console.error("Webhook Error:", err);

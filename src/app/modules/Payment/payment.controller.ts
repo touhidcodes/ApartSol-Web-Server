@@ -8,7 +8,7 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
   const { paymentData } = req.body;
 
   const result = await paymentServices.createPayment(paymentData);
-
+  console.log(result);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -18,6 +18,7 @@ const createPayment = catchAsync(async (req: Request, res: Response) => {
 });
 
 const processWebhook = catchAsync(async (req: Request, res: Response) => {
+  console.log("webhook processing from controller");
   const sig = req.headers["stripe-signature"] as string;
 
   if (!sig) {
